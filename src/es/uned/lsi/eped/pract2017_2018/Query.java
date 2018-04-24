@@ -1,0 +1,30 @@
+package es.uned.lsi.eped.pract2017_2018;
+
+public class Query {
+
+	private String texto;
+	
+	private int frecuencia;
+	
+	/* Construye una nueva query con el texto pasado como parametro */
+	public Query (String texto) {
+		this.texto = texto;
+		frecuencia = 0;
+	}
+	
+	/* Modifica la frecuencia de la query */
+	public void setFreq(int frequency) {
+		this.frecuencia = frequency;
+	}
+	
+	/* Devuelve el texto de una query */
+	public int getFreq() {
+		return frecuencia;
+	}
+	
+	/* Devuelve la frecuencia de una query */
+	public String getText() {
+		return texto;
+	}
+
+}
