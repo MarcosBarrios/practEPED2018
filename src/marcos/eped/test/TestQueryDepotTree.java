@@ -2,27 +2,55 @@ package marcos.eped.test;
 
 import org.junit.jupiter.api.Test;
 
+import es.uned.lsi.eped.pract2017_2018.QueryDepotTree;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.IOException;
 
 public class TestQueryDepotTree {
 
+	/*
+	 * Por cada consulta solo se aumenta la frecuencia
+	 * del ultimo nodo del texto de la consulta, de esta manera
+	 * cuando se itera el arbol se puede saber que secuencia
+	 * de letras forma una consulta.
+	 * 
+	 * Se iteran los hijos, si se encuentra una letra con una frecuencia
+	 * diferente de 0 se aumenta en 1 la variable que contiene el numero
+	 * de consultas en el deposito.
+	 */
 	@Test
-	public void testAddIncFreqQuery() {
-		
+	public void testAddnumQueriesEmpty() {
+		QueryDepotTree qdt = new QueryDepotTree();
+		qdt.incFreqQuery("azucah");
+		qdt.incFreqQuery("");
+		assertEquals(1, qdt.numQueries());
 	}
 	
-	/**
-	 * PROBAR IMPLEMENTACION MEDIANTE QUERYS DE 1 LETRA
-	 * CADA QUERY TENDRÍA UNA LETRA Y UNA FRECUENCIA, CUANDO
-	 * AÑADIMOS UNA CONSULTA (QUERY) SIMPLEMENTE SE AUMENTA
-	 * LA FRECUENCIA DE LA LETRA Y SE PONE LA LETRA EN EL DEPOSITO
-	 * 
-	 */
+	@Test
+	public void testAddnumQueriesFromFile() throws IOException {
+		QueryDepotTree qdt = new QueryDepotTree("src/JdP-consultas.txt");
+		assertEquals(12108, qdt.numQueries());
+	}
 	
 	@Test
-	public void testAddMaxCharCapacity() {
-		char a = (char)1111143120  ;
-		System.out.println(a);
-		int u = (int) a;
+	public void testAddIncFreqQuery() {
+		QueryDepotTree qdt = new QueryDepotTree();
+		qdt.incFreqQuery("Prueba");
+		assertEquals(1, qdt.numQueries());
+	}
+	
+	@Test
+	public void testAddgetFreqQuery() {
+		QueryDepotTree qdt = new QueryDepotTree();
+		qdt.incFreqQuery("a");
+		qdt.incFreqQuery("a");
+		qdt.incFreqQuery("a");
+		qdt.incFreqQuery("a");
+		qdt.incFreqQuery("a");
+		qdt.incFreqQuery("a");
+		qdt.incFreqQuery("a");
+		assertEquals(7, qdt.getFreqQuery("a"));
 	}
 }

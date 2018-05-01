@@ -12,7 +12,7 @@ import es.uned.lsi.eped.pract2017_2018.Query;
 import es.uned.lsi.eped.pract2017_2018.QueryDepotList;
 
 public class TestQueryDepotList {
-
+	
 	@Test
 	public void testAddIncFrecuency() {
 		QueryDepotList qdl1 = new QueryDepotList();
@@ -122,7 +122,7 @@ public class TestQueryDepotList {
 	}
 	
 	@Test
-	public void testListOfQueries() throws IOException {
+	public void testAddListOfQueries() throws IOException {
 		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
 		
 		ListIF<Query> l = qdl.listOfQueries("cappuccino");
@@ -131,6 +131,12 @@ public class TestQueryDepotList {
 			Query temp = itr.getNext();
 			System.out.println( "(" + temp.getFreq() + ") " + temp.getText());
 		}
+	}
+	
+	@Test
+	public void testAddnumQueries() throws IOException{
+		QueryDepotList qdl = new QueryDepotList("src/JdP-consultas.txt");
+		System.out.println(qdl.numQueries());
 	}
 
 }

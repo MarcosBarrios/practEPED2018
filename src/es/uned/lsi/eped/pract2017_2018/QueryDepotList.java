@@ -75,7 +75,7 @@ public class QueryDepotList implements QueryDepotIF {
 
 	/**
 	 * Devuelve una lista con las consultas del deposito
-	 * ordenadas de mayor a menor en orden lexicográfico
+	 * ordenadas de mayor a menor en orden lexicografico
 	 * @param prefix - El prefijo de la consulta
 	 */
 	public ListIF<Query> listOfQueries(String prefix) {
