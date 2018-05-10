@@ -39,11 +39,11 @@ public class QueryDepotList implements QueryDepotIF {
 		FileReader registroConsultas;
 		registroConsultas = new FileReader(pathFile);
 		BufferedReader lector = new BufferedReader(registroConsultas);
-        String consulta;
-        while((consulta = lector.readLine())!=null) {
-        	incFreqQuery(consulta);
-        }
-        lector.close();
+    	String consulta;
+    	while((consulta = lector.readLine())!=null) {
+    		incFreqQuery(consulta);
+    	}
+    	lector.close();
 	}
 	
 	/**
@@ -95,7 +95,7 @@ public class QueryDepotList implements QueryDepotIF {
 				
 		//Obtenemos la frecuencia maxima
 		int frecuenciaMax = obtenerMaxFrecuencia(listaPrefijo);
-				
+		
 		//Crear una lista ordenada de mayor a menor frecuencia
 		ListIF<Query> listaOrdenada = obtenerListaOrdenada(listaPrefijo, frecuenciaMax);
 		
@@ -141,13 +141,16 @@ public class QueryDepotList implements QueryDepotIF {
 	private ListIF<Query> ordenarLexicograficamente(ListIF<Query> listaOrdenada, int frecuenciaMax) {
 		ListIF<Integer> listaFrecuencias = obtenerFrecuencias(listaOrdenada);
 		
+		//O(N*N*N*K)
 		IteratorIF<Integer> itr = listaFrecuencias.iterator();
 		while(itr.hasNext()) { //Para cada frecuencia
 			int frecuencia = itr.getNext();
 			
+			//O(N)
 			//Obtenemos la lista de consultas con frecuencia i
 			ListIF<Query> listaMismaFrecuencia = obtenerMismaFrecuencia(listaOrdenada, frecuencia);
-
+			
+			//O(N*N*K) (K = nº minimo de caracteres entre dos consultas)
 			//Obtenemos la lista ordenada lexicograficamente con la frecuencia especifica
 			listaMismaFrecuencia = listaLexicografica(listaMismaFrecuencia);
 			
@@ -155,7 +158,8 @@ public class QueryDepotList implements QueryDepotIF {
 			//listaOrdenada para poder sustituir la listaMismaFrecuencia en la posicion 
 			//correcta de listaOrdenada tras haber ordenado las consultas de 
 			//listaMismaFrecuencia lexicograficamente
-						
+			
+			//O(N)
 			int primeraPos = 0;
 			int aux = 1;
 			boolean encontrado = false;
@@ -169,7 +173,8 @@ public class QueryDepotList implements QueryDepotIF {
 				}
 				aux++;
 			}
-						
+			
+			//O(N)
 			//Sustituimos la lista ordenada lexicograficamente por la que no lo esta
 			//con la misma frecuencia
 			for(int z = 0; z < listaMismaFrecuencia.size(); z++) {
@@ -184,31 +189,33 @@ public class QueryDepotList implements QueryDepotIF {
 	
 	//Ordena una lista ordenada por frecuencias a una lista ordenada 
 	//por frecuencias y lexicograficamente
-	private ListIF<Query>listaLexicografica(ListIF<Query> listaMismaFrecuencia) {
+	private ListIF<Query> listaLexicografica(ListIF<Query> listaMismaFrecuencia) {
 		ListIF<Query> lista = listaMismaFrecuencia;
 		
+		//O(N*N*K)
 		for(int j = 0; j < lista.size(); j++) {
 			for(int i = 0; i < lista.size(); i++) {
-			Query temp1 = lista.get(i);
-			Query temp2 = lista.get(i+1);
-			
-			//Compara la lexicografia de temp2 con respecto a temp1
-			//Si comparacion==1 entonces temp2 va antes de temp1 lexicograficamente
-			//Si comparacion==0 entonces temp2 y temp1 son iguales lexicograficamente
-			//Si comparacion==-1 entonces temp2 va despues de temp1 lexicograficamente
-			int comparacion = compararLexicograficamente(temp2.getText(), temp1.getText());
-			int masPequeño = temp2.getText().length()-temp1.getText().length();			
-			
-			//Si temp2 es menor que temp1 lexicograficamente
-			//O si temp2 es igual que temp1 pero la consulta es mas pequeña
-			if(comparacion==1 || 
-					(comparacion==0 && masPequeño<0) ) {
-				Query aux = new Query(temp2.getText());
-				aux.setFreq(temp2.getFreq());
-				lista.set(i+1, temp1);
-				lista.set(i, aux);
+				Query temp1 = lista.get(i);
+				Query temp2 = lista.get(i+1);
+				
+				//Compara la lexicografia de temp2 con respecto a temp1
+				//Si comparacion==1 entonces temp2 va antes de temp1 lexicograficamente
+				//Si comparacion==0 entonces temp2 y temp1 son iguales lexicograficamente
+				//Si comparacion==-1 entonces temp2 va despues de temp1 lexicograficamente
+				//O(K) (K = nº caracteres consulta con menos caracteres)
+				int comparacion = compararLexicograficamente(temp2.getText(), temp1.getText());
+				int masPequeño = temp2.getText().length()-temp1.getText().length();			
+				
+				//Si temp2 es menor que temp1 lexicograficamente
+				//O si temp2 es igual que temp1 pero la consulta es mas pequeña
+				if(comparacion==1 || 
+						(comparacion==0 && masPequeño<0) ) {
+					Query aux = new Query(temp2.getText());
+					aux.setFreq(temp2.getFreq());
+					lista.set(i+1, temp1);
+					lista.set(i, aux);
+				}
 			}
-		}
 		}
 		
 		//Una vez tenemos la lista la iteramos entera

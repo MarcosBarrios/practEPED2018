@@ -7,6 +7,7 @@ import java.io.IOException;
 import es.uned.lsi.eped.DataStructures.GTree;
 import es.uned.lsi.eped.DataStructures.GTreeIF;
 import es.uned.lsi.eped.DataStructures.IteratorIF;
+import es.uned.lsi.eped.DataStructures.List;
 import es.uned.lsi.eped.DataStructures.ListIF;
 
 public class QueryDepotTree implements QueryDepotIF {
@@ -128,6 +129,78 @@ public class QueryDepotTree implements QueryDepotIF {
 	 */
 	public ListIF<Query> listOfQueries(String prefix) {
 		return null;
+	}
+	
+	public ListIF<Query> obtenerConsultas() {
+		ListIF<Query> listaConsultas = new List<Query>();
+		
+		for(int i = 0; i < numQueries(); i++) {
+			//String textoConsulta = obtenerConsulta(listaConsultas, primerNodo, 1, "");
+			Query q = obtenerConsulta(listaConsultas, primerNodo, 0, null, "", false);
+			listaConsultas.insert(q, listaConsultas.size()+1);
+		}
+		
+		return listaConsultas;
+	}
+	
+	private Query obtenerConsulta(ListIF<Query> listaConsultas, GTreeIF<Query> nodo,
+		int profundidad, GTreeIF<Query> nodoConHijos, String consulta, boolean ignorar) {
+		ListIF<GTreeIF<Query>> listaNodos = nodo.getChildren();
+		IteratorIF<GTreeIF<Query>> itr = listaNodos.iterator();
+		while(itr.hasNext()) {
+			GTreeIF<Query> temp = itr.getNext();
+			if(ignorar ) {
+				System.out.println("lul!");
+				temp = itr.getNext();
+			}
+			
+			consulta = consulta.concat(temp.getRoot().getText());
+			
+			if(temp.getRoot().getFreq()>0 &&
+					!contieneCadenaConsulta(consulta, listaConsultas)) {
+				System.out.println("\t dentro: " + consulta);
+				Query aux = new Query(consulta);
+				aux.setFreq(temp.getRoot().getFreq());
+				return aux;
+			}else if(temp.getRoot().getFreq()>0 &&
+						contieneCadenaConsulta(consulta, listaConsultas)){
+				if(temp.getNumChildren()>0) {
+					Query aux = obtenerConsulta(listaConsultas, temp, 0, temp, consulta, false);
+					return aux;
+				}else {
+					//Volver hasta el ultimo nodo con hijo y
+					//borrar consulta tantas veces como profundidad desde
+					//el ultimo hijo
+					consulta = acortarCadenaNVeces(consulta, profundidad);
+					
+					return obtenerConsulta(listaConsultas, nodoConHijos, 0, nodoConHijos, consulta, true);
+				}
+			}else{
+				Query aux = obtenerConsulta(listaConsultas, temp, profundidad+1, nodoConHijos, consulta, false);
+				return aux;
+			}
+			
+		}
+		return new Query("");
+	}
+	
+	//Acorta una cadena n veces por la derecha, eliminando las letras correspondientes
+	public String acortarCadenaNVeces(String cadena, int n) {
+		return cadena.substring(0, cadena.length()-n);
+	}
+	
+	//Devuelve verdadero si listaConsultas contiene a consulta
+	private boolean contieneCadenaConsulta(String consulta, ListIF<Query> listaConsultas) {
+		
+		IteratorIF<Query> itr = listaConsultas.iterator();
+		while(itr.hasNext()) {
+			Query temp = itr.getNext();
+			if(temp.getText().equals(consulta)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	/**

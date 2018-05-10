@@ -2,6 +2,10 @@ package marcos.eped.test;
 
 import org.junit.jupiter.api.Test;
 
+import es.uned.lsi.eped.DataStructures.IteratorIF;
+import es.uned.lsi.eped.DataStructures.List;
+import es.uned.lsi.eped.DataStructures.ListIF;
+import es.uned.lsi.eped.pract2017_2018.Query;
 import es.uned.lsi.eped.pract2017_2018.QueryDepotTree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,6 +43,19 @@ public class TestQueryDepotTree {
 		QueryDepotTree qdt = new QueryDepotTree();
 		qdt.incFreqQuery("Prueba");
 		assertEquals(1, qdt.numQueries());
+	}
+
+	@Test
+	public void testAddObtenerConsultas() throws IOException{
+		QueryDepotTree qdt = new QueryDepotTree("src/Debugging_Consultas.txt");
+		System.out.println(qdt.numQueries());
+		ListIF<Query> lista = qdt.obtenerConsultas();
+		IteratorIF<Query> itr = lista.iterator();
+		System.out.println("lul: " + lista.size());
+		while(itr.hasNext()) {
+			Query temp = itr.getNext();
+			System.out.println(temp.getText() + "- (" + temp.getFreq() + ") ");
+		}
 	}
 	
 	@Test
