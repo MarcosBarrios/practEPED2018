@@ -136,23 +136,19 @@ public class QueryDepotTree implements QueryDepotIF {
 		
 		for(int i = 0; i < numQueries(); i++) {
 			//String textoConsulta = obtenerConsulta(listaConsultas, primerNodo, 1, "");
-			Query q = obtenerConsulta(listaConsultas, primerNodo, 0, null, "", false);
-			listaConsultas.insert(q, listaConsultas.size()+1);
+			Query q = obtenerConsulta(listaConsultas, primerNodo, "");
+			if(q!=null)listaConsultas.insert(q, listaConsultas.size()+1);
 		}
 		
 		return listaConsultas;
 	}
 	
 	private Query obtenerConsulta(ListIF<Query> listaConsultas, GTreeIF<Query> nodo,
-		int profundidad, GTreeIF<Query> nodoConHijos, String consulta, boolean ignorar) {
+		String consulta) {
 		ListIF<GTreeIF<Query>> listaNodos = nodo.getChildren();
 		IteratorIF<GTreeIF<Query>> itr = listaNodos.iterator();
 		while(itr.hasNext()) {
 			GTreeIF<Query> temp = itr.getNext();
-			if(ignorar ) {
-				System.out.println("lul!");
-				temp = itr.getNext();
-			}
 			
 			consulta = consulta.concat(temp.getRoot().getText());
 			
@@ -162,26 +158,15 @@ public class QueryDepotTree implements QueryDepotIF {
 				Query aux = new Query(consulta);
 				aux.setFreq(temp.getRoot().getFreq());
 				return aux;
-			}else if(temp.getRoot().getFreq()>0 &&
-						contieneCadenaConsulta(consulta, listaConsultas)){
-				if(temp.getNumChildren()>0) {
-					Query aux = obtenerConsulta(listaConsultas, temp, 0, temp, consulta, false);
+			}else {
+				Query aux = obtenerConsulta(listaConsultas, temp, consulta);
+				if(aux!=null) {
 					return aux;
-				}else {
-					//Volver hasta el ultimo nodo con hijo y
-					//borrar consulta tantas veces como profundidad desde
-					//el ultimo hijo
-					consulta = acortarCadenaNVeces(consulta, profundidad);
-					
-					return obtenerConsulta(listaConsultas, nodoConHijos, 0, nodoConHijos, consulta, true);
 				}
-			}else{
-				Query aux = obtenerConsulta(listaConsultas, temp, profundidad+1, nodoConHijos, consulta, false);
-				return aux;
 			}
-			
+			consulta = acortarCadenaNVeces(consulta, 1);
 		}
-		return new Query("");
+		return null;
 	}
 	
 	//Acorta una cadena n veces por la derecha, eliminando las letras correspondientes
