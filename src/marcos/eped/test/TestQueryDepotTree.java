@@ -2,6 +2,9 @@ package marcos.eped.test;
 
 import org.junit.jupiter.api.Test;
 
+import es.uned.lsi.eped.DataStructures.IteratorIF;
+import es.uned.lsi.eped.DataStructures.ListIF;
+import es.uned.lsi.eped.pract2017_2018.Query;
 import es.uned.lsi.eped.pract2017_2018.QueryDepotTree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,16 +13,12 @@ import java.io.IOException;
 
 public class TestQueryDepotTree {
 
-	/*
-	 * Por cada consulta solo se aumenta la frecuencia
-	 * del ultimo nodo del texto de la consulta, de esta manera
-	 * cuando se itera el arbol se puede saber que secuencia
-	 * de letras forma una consulta.
-	 * 
-	 * Se iteran los hijos, si se encuentra una letra con una frecuencia
-	 * diferente de 0 se aumenta en 1 la variable que contiene el numero
-	 * de consultas en el deposito.
-	 */
+	@Test
+	public void testAddlistOfQueries() throws IOException {
+		QueryDepotTree qdt = new QueryDepotTree("src/JdP-consultas.txt");
+		ListIF<Query> lista = qdt.listOfQueries("car");
+	}
+	
 	@Test
 	public void testAddnumQueriesEmpty() {
 		QueryDepotTree qdt = new QueryDepotTree();
@@ -41,8 +40,7 @@ public class TestQueryDepotTree {
 		assertEquals(1, qdt.numQueries());
 	}
 
-	/*Metodo usado para testear el metodo de qdt que obtiene una consulta diferente
-	 * cada vez que se le llama que no este en una lista x @Test
+	/*@Test
 	public void testAddObtenerConsultas() throws IOException{
 		QueryDepotTree qdt = new QueryDepotTree("src/Debugging_Consultas.txt");
 		System.out.println(qdt.numQueries());

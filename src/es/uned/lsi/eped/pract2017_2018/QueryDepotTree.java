@@ -137,6 +137,7 @@ public class QueryDepotTree implements QueryDepotIF {
 		 * 
 		 * Despues de obtener la lista, se procede igual que en la implementacion
 		 * mediante lista:
+		 * 
 		 * 		2. Obtener lista con las palabras que empiezan con el prefijo
 		 * 		3. Obtener la frecuencia maxima
 		 * 		4. Crear una lista ordenada de mayor a menor frecuencia
@@ -145,6 +146,8 @@ public class QueryDepotTree implements QueryDepotIF {
 		
 		//1. Obtener las consultas almacenadas en forma de lista
 		ListIF<Query> depositoConsultas = obtenerConsultas();
+		
+		System.out.println("prueba");
 		
 		//2. Obtener lista con las palabras que empiezan con el prefijo
 		ListIF<Query> listaPrefijo = obtenerListaPrefijo(depositoConsultas, prefix);
@@ -165,62 +168,38 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * 
 	 * @return listaConsultas Lista con todas las consultas almacenadas en el arbol
 	 */
-	private ListIF<Query> obtenerConsultas() {
-		ListIF<Query> listaConsultas = new List<Query>();
-		
-		//Iteramos tantas veces como consultas haya guardadas
-		for(int i = 0; i < numQueries(); i++) {
-			//String textoConsulta = obtenerConsulta(listaConsultas, primerNodo, 1, "");
-			
-			//Obtenemos una consulta que no este ya en listaConsultas
-			Query q = añadirConsultaDiferente(listaConsultas, primerNodo, "");
-			
-			//Solo se añade si se ha encontrado una consulta que no haya
-			//sido añadida ya a listaConsultas
-			if(q!=null)listaConsultas.insert(q, listaConsultas.size()+1);
-		}
+	public ListIF<Query> obtenerConsultas() {
+		ListIF<Query> listaConsultas = obtenerListaConsultas(primerNodo, "");
 		
 		return listaConsultas;
 	}
 	
-	private Query añadirConsultaDiferente(ListIF<Query> listaConsultas, GTreeIF<Query> nodo,
-		String consulta) {
+	public ListIF<Query> obtenerListaConsultas(GTreeIF<Query> nodo, String consulta){
+		ListIF<Query> lr = new List<Query>();
+		
 		ListIF<GTreeIF<Query>> listaNodos = nodo.getChildren();
 		IteratorIF<GTreeIF<Query>> itr = listaNodos.iterator();
-		while(itr.hasNext()) { //Iteramos todos los hijos de un nodo
-			GTreeIF<Query> temp = itr.getNext(); //Pasamos al siguiente hijo
+		while(itr.hasNext()) {
+			GTreeIF<Query> temp = itr.getNext();
 			
-			//Concatena la cadena consulta con el texto del nodo
 			consulta = consulta.concat(temp.getRoot().getText());
 			
-			//Si encuentra un nodo con frecuencia mayor que 0
-			//y no se ha añadido un Query con el texto consulta
-			//y la frecuencia del nodo actual a listaConsultas
-			if(temp.getRoot().getFreq()>0 &&
-					!contieneCadenaConsulta(consulta, listaConsultas)) {
-				//System.out.println("\t dentro: " + consulta);
-				
-				//Devolvemos una consulta con consulta y freq este nodo
-				Query aux = new Query(consulta);
-				aux.setFreq(temp.getRoot().getFreq());
-				return aux;
-			}else { //En cualquier otro caso
-				//Continuar la busqueda de una consulta que no haya sido añadida
-				//a listaConsultas
-				Query aux = añadirConsultaDiferente(listaConsultas, temp, consulta);
-				if(aux!=null) { //Si se encuentra una consulta
-					//Devolver esa consulta para añadirla a listaConsultas posteriormente
-					return aux;
+			if(temp.getRoot().getFreq()>0) {
+				Query q = new Query(consulta);
+				q.setFreq(temp.getRoot().getFreq());
+				lr.insert(q, lr.size()+1);
+			}else {
+				ListIF<Query> l = obtenerListaConsultas(temp, consulta);
+				IteratorIF<Query> itrl = l.iterator();
+				while(itrl.hasNext()) {
+					Query temp2 = itrl.getNext();
+					lr.insert(temp2, lr.size()+1);
 				}
 			}
-			//Al cambiar de un hijo a otro se acorta
-			//consulta por el final 1 vez
-			consulta = acortarCadenaNVeces(consulta, 1);
+			consulta = acortarCadenaNVeces(consulta,  1);
 		}
 		
-		//En caso de que no se encuentre una consulta en
-		//la ramificacion actual
-		return null; 
+		return lr;
 	}
 	
 	//Acorta una cadena n veces por la derecha, eliminando las letras correspondientes
