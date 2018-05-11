@@ -113,8 +113,9 @@ public class QueryDepotTree implements QueryDepotIF {
 					
 					//Si la letra encontrada es la ultima en la consulta
 					if((i+1)==q.length()) { 
-						//Devuelve la frecuencia de la consulta 
-						return temp.getRoot().getFreq();
+						//Obtiene el nodo hoja asociado y devuelve su frecuencia
+						GTreeIF<Query> nodoFrecuencia = obtenerNodoHoja(temp);
+						return nodoFrecuencia.getRoot().getFreq();
 					}
 				}
 			}
@@ -147,8 +148,6 @@ public class QueryDepotTree implements QueryDepotIF {
 		//1. Obtener las consultas almacenadas en forma de lista
 		ListIF<Query> depositoConsultas = obtenerConsultas();
 		
-		System.out.println("prueba");
-		
 		//2. Obtener lista con las palabras que empiezan con el prefijo
 		ListIF<Query> listaPrefijo = obtenerListaPrefijo(depositoConsultas, prefix);
 		
@@ -159,7 +158,7 @@ public class QueryDepotTree implements QueryDepotIF {
 		
 		depositoConsultas = ordenarLexicograficamente(listaOrdenada, frecuenciaMax);
 		
-		return null;
+		return depositoConsultas;
 	}
 
 	/**
@@ -526,7 +525,10 @@ public class QueryDepotTree implements QueryDepotIF {
 					
 					//Solo aumenta la frecuencia si es la ultima letra de la consulta
 					if((i+1)==q.length()) {
-						temp.getRoot().setFreq(temp.getRoot().getFreq()+1);
+						//Obtenemos el nodo hoja que contiene la frecuencia y
+						//la aumentamos en 1.
+						GTreeIF<Query> nodoFrecuencia = obtenerNodoHoja(temp);
+						nodoFrecuencia.getRoot().setFreq(nodoFrecuencia.getRoot().getFreq()+1);
 					}
 					añadirConsulta(temp, q, i+1);
 				}
@@ -542,13 +544,34 @@ public class QueryDepotTree implements QueryDepotIF {
 				
 				//Solo aumenta la frecuencia si es la ultima letra de la consulta
 				if((i+1)==q.length()) {
-					nuevoQuery.setFreq(1);
+					//Añadimos un nodo hoja que contiene la frecuencia y
+					//le asignamos el valor 1
+					GTreeIF<Query> nodoFrecuencia = new GTree<Query>();
+					nodoFrecuencia.getRoot().setFreq(1);
 				}
 				nuevoNodo.setRoot(nuevoQuery);
 				listaAux.insert(nuevoNodo, listaAux.size()+1);
 				añadirConsulta(nuevoNodo, q, i+1);
 			}
 		}
+	}
+	
+	/**
+	 * Devuelve el nodo hoja de un nodo en concreto
+	 * @param nodo Nodo padre del nodo hoja
+	 */
+	private GTreeIF<Query> obtenerNodoHoja(GTreeIF<Query> nodo) {
+		
+		IteratorIF<GTreeIF<Query>> itr = nodo.getChildren().iterator();
+		while(itr.hasNext()) {
+			GTreeIF<Query> temp = itr.getNext();
+			
+			if(temp.isLeaf()) {
+				return temp;
+			}
+		}
+		
+		return null;
 	}
 
 }
