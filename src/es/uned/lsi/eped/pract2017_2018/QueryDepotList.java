@@ -83,16 +83,17 @@ public class QueryDepotList implements QueryDepotIF {
 		
 		/*
 		 * Algoritmo:
-		 * Obtener lista con las palabras que empiezan con el prefijo
-		 * Obtener la frecuencia maxima
-		 * Crear una lista ordenada de mayor a menor frecuencia
-		 * Ordenar lexicográficmente la lista
+		 * 
+		 * 		1. Obtener lista con las palabras que empiezan con el prefijo
+		 * 		2. Obtener la frecuencia maxima
+		 * 		3. Crear una lista ordenada de mayor a menor frecuencia
+		 * 		4. Ordenar lexicográficmente la lista
 		 * 
 		 */
 		
 		//Obtenemos la lista con las palabras que empiezan con el prefijo
 		ListIF<Query> listaPrefijo = obtenerListaPrefijo(prefix);
-				
+		
 		//Obtenemos la frecuencia maxima
 		int frecuenciaMax = obtenerMaxFrecuencia(listaPrefijo);
 		

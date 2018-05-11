@@ -2,10 +2,6 @@ package marcos.eped.test;
 
 import org.junit.jupiter.api.Test;
 
-import es.uned.lsi.eped.DataStructures.IteratorIF;
-import es.uned.lsi.eped.DataStructures.List;
-import es.uned.lsi.eped.DataStructures.ListIF;
-import es.uned.lsi.eped.pract2017_2018.Query;
 import es.uned.lsi.eped.pract2017_2018.QueryDepotTree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,7 +41,8 @@ public class TestQueryDepotTree {
 		assertEquals(1, qdt.numQueries());
 	}
 
-	@Test
+	/*Metodo usado para testear el metodo de qdt que obtiene una consulta diferente
+	 * cada vez que se le llama que no este en una lista x @Test
 	public void testAddObtenerConsultas() throws IOException{
 		QueryDepotTree qdt = new QueryDepotTree("src/Debugging_Consultas.txt");
 		System.out.println(qdt.numQueries());
@@ -56,7 +53,7 @@ public class TestQueryDepotTree {
 			Query temp = itr.getNext();
 			System.out.println(temp.getText() + "- (" + temp.getFreq() + ") ");
 		}
-	}
+	}*/
 	
 	@Test
 	public void testAddgetFreqQuery() {
