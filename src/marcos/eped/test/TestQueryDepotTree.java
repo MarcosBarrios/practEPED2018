@@ -2,9 +2,9 @@ package marcos.eped.test;
 
 import org.junit.jupiter.api.Test;
 
-import es.uned.lsi.eped.DataStructures.IteratorIF;
-import es.uned.lsi.eped.DataStructures.ListIF;
-import es.uned.lsi.eped.pract2017_2018.Query;
+//import es.uned.lsi.eped.DataStructures.IteratorIF;
+//import es.uned.lsi.eped.DataStructures.ListIF;
+//import es.uned.lsi.eped.pract2017_2018.Query;
 import es.uned.lsi.eped.pract2017_2018.QueryDepotTree;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,11 +13,11 @@ import java.io.IOException;
 
 public class TestQueryDepotTree {
 
-	@Test
+	/*@Test
 	public void testAddlistOfQueries() throws IOException {
 		QueryDepotTree qdt = new QueryDepotTree("src/JdP-consultas.txt");
 		ListIF<Query> lista = qdt.listOfQueries("car");
-	}
+	}*/
 	
 	@Test
 	public void testAddnumQueriesEmpty() {

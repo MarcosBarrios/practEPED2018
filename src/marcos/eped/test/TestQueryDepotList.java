@@ -13,10 +13,10 @@ import es.uned.lsi.eped.pract2017_2018.QueryDepotList;
 
 public class TestQueryDepotList {
 	
-	public void testAddlistOfQueries() throws IOException {
+	/*public void testAddlistOfQueries() throws IOException {
 		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
 		ListIF<Query> lista = qdl.listOfQueries("car");
-	}
+	}*/
 	
 	@Test
 	public void testAddIncFrecuency() {

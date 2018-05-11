@@ -206,21 +206,6 @@ public class QueryDepotTree implements QueryDepotIF {
 	private String acortarCadenaNVeces(String cadena, int n) {
 		return cadena.substring(0, cadena.length()-n);
 	}
-	
-	//Devuelve verdadero si listaConsultas contiene una consulta con el texto
-	//consulta
-	private boolean contieneCadenaConsulta(String consulta, ListIF<Query> listaConsultas) {
-		
-		IteratorIF<Query> itr = listaConsultas.iterator();
-		while(itr.hasNext()) {
-			Query temp = itr.getNext();
-			if(temp.getText().equals(consulta)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
 
 	/**
 	 * Obtencion de una lista de palabras que tengan el prefijo
