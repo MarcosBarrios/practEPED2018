@@ -1,5 +1,6 @@
 package marcos.eped.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
@@ -32,88 +33,6 @@ public class TestQueryDepotList {
 		assertEquals(3, qdl3.getFreqQuery("prueba"));
 	}
 	
-	/*@Test
-	public void testAddCompararLexicografia() {
-		QueryDepotList qdl = new QueryDepotList();
-		assertEquals(1, qdl.compararLexicograficamente("cappuccino palmier", "cappuccino piastra"));
-	}*/
-	
-	/*@Test
-	public void testAddListaOrdenada() {	
-		QueryDepotList qdl = new QueryDepotList();
-		qdl.incFreqQuery("perro");
-		qdl.incFreqQuery("perrito");
-		qdl.incFreqQuery("perrito");
-		qdl.incFreqQuery("perrito");
-		qdl.incFreqQuery("perrito");
-		qdl.incFreqQuery("perri");
-		qdl.incFreqQuery("Perro");
-		qdl.incFreqQuery("Perro");
-		qdl.incFreqQuery("  Perro");
-		qdl.incFreqQuery(".Perro");
-		qdl.incFreqQuery("pherro");
-		qdl.incFreqQuery("barbacoa");
-		qdl.incFreqQuery("barbacoa");
-		qdl.incFreqQuery("barbacoa");
-		qdl.incFreqQuery("barbacoa");
-		qdl.incFreqQuery("barbacoa");
-		qdl.incFreqQuery("BarBacOa");
-		qdl.incFreqQuery("BARBACOA");
-		qdl.incFreqQuery("BARBAcoa");
-		qdl.incFreqQuery("abc");
-		qdl.incFreqQuery("abc");
-		qdl.incFreqQuery("aBC");
-		qdl.incFreqQuery("aBC");
-		qdl.incFreqQuery("aBC");
-		qdl.incFreqQuery("aBC");
-		qdl.incFreqQuery("aBC");
-		qdl.incFreqQuery("aBC");
-		qdl.incFreqQuery("aBCdefg");
-		qdl.incFreqQuery("Estufa");
-		qdl.incFreqQuery("EEEEstufa");
-		qdl.incFreqQuery("zapatero");
-		qdl.incFreqQuery("Zapatero.");
-		qdl.incFreqQuery("z.apatero");
-		qdl.incFreqQuery("z.apatero");
-		qdl.incFreqQuery("zap.atero");
-		qdl.incFreqQuery("b1rb3coa");
-		qdl.incFreqQuery("123");
-		qdl.incFreqQuery("1234");
-		qdl.incFreqQuery("123456");
-		qdl.incFreqQuery("a1b2c3");
-		qdl.incFreqQuery("a1b2c3");
-		qdl.incFreqQuery(".1a");
-		qdl.incFreqQuery(".1abaa");
-		qdl.incFreqQuery(".1cd");
-		qdl.incFreqQuery(".2a");
-		qdl.incFreqQuery(".2a");
-		qdl.incFreqQuery(".3a");
-		
-		/*ListIF<Query> lPrefijo = qdl.obtenerListaPrefijo("per");
-		IteratorIF<Query> itrlP = lPrefijo.iterator();
-		while(itrlP.hasNext()) {
-			Query temp = itrlP.getNext();
-			System.out.println("Freq=(" + temp.getFreq() + ") " + temp.getText());
-		}
-		
-		int maxFreq = qdl.obtenerMaxFrecuencia(lPrefijo);
-		System.out.println("maxfreq = " + maxFreq);
-		
-		ListIF<Query> lOrdenada = qdl.obtenerListaOrdenada(lPrefijo, maxFreq);
-		IteratorIF<Query> itrlO = lOrdenada.iterator();		while(itrlO.hasNext()) {
-			Query temp = itrlO.getNext();
-			System.out.println("Freq=(" + temp.getFreq() + ") " + temp.getText());
-		}
-				
-		ListIF<Query> listaLexicografica = qdl.listOfQueries("abc");
-		IteratorIF<Query> itrlL = listaLexicografica.iterator();
-		while(itrlL.hasNext()) {
-			Query temp = itrlL.getNext();
-			System.out.println( "(" + temp.getFreq() + ") " + temp.getText());
-		}
-		
-	}*/
-	
 	@Test
 	public void testAddTamaño() {
 		QueryDepotList qdl = new QueryDepotList();
@@ -136,7 +55,7 @@ public class TestQueryDepotList {
 	@Test
 	public void testAddnumQueries() throws IOException{
 		QueryDepotList qdl = new QueryDepotList("src/JdP-consultas.txt");
-		System.out.println(qdl.numQueries());
+		assertEquals(12108, qdl.numQueries());
 	}
 
 }
