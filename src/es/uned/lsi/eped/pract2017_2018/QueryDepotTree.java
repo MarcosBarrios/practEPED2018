@@ -13,7 +13,9 @@ import es.uned.lsi.eped.DataStructures.ListIF;
 public class QueryDepotTree implements QueryDepotIF {
 	
 	//Nodo raiz del deposito
-	private GTreeIF<Query> primerNodo;
+	public GTreeIF<Query> primerNodo;
+	
+	private int numeroConsultas;
 	
 		
 	//Metodo constructor
@@ -36,36 +38,27 @@ public class QueryDepotTree implements QueryDepotIF {
 	}
 	
 	/**
-	 * Devuelve el numero de consultas en el deposito
-	 * 
-	 * @return aux Numero de consultas del deposito
+	 * Devuelve el primer nodo que contiene el deposito
+	 * @return primerNodo Primer nodo (Raiz) del arbol
 	 */
-	public int numQueries() {	
-		//Obtenemos la lista de hijos hoja del nodo inicial del deposito
-		//El numero de consultas es igual al numero de frecuencias mayor
-		//que 0 almacenadas
-		return obtenerNumeroConsultas(primerNodo);
+	private GTreeIF<Query> obtenerDeposito(){
+		return primerNodo;
 	}
 	
 	/**
-	 * Itera todos los hijos de un nodo y aumenta aux en 1 cada vez
-	 * que encuentra una frecuencia diferente de 0.
-	 * @param nodo Nodo a iterar
-	 * @return aux Numero de hojas
+	 * Incrementa el numero de consultas en 1
 	 */
-	private int obtenerNumeroConsultas(GTreeIF<Query> nodo) {
-		int aux = 0;
-		ListIF<GTreeIF<Query>> listaAux = nodo.getChildren();
-		IteratorIF<GTreeIF<Query>> itr = listaAux.iterator();
-		while(itr.hasNext()) {
-			
-			GTreeIF<Query> temp = itr.getNext();
-			if(temp.getRoot().getFreq()>0) {
-				aux++;
-			}
-			aux = aux + obtenerNumeroConsultas(temp);
-		}
-		return aux;
+	private void incrementarNumeroConsultas() {
+		numeroConsultas++;
+	}
+	
+	/**
+	 * Devuelve el numero de consultas en el deposito
+	 * 
+	 * @return numeroConsultas Numero de consultas del deposito
+	 */
+	public int numQueries() {
+		return numeroConsultas;
 	}
 	
 	/**
@@ -74,19 +67,21 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @return returnVal Frecuencia de la consulta pasada como argumento
 	 */
 	public int getFreqQuery(String q) {
-		return obtenerFrecuenciaConsulta(primerNodo, q, 0);
+		return obtenerFrecuenciaConsulta(obtenerDeposito(), q, 0);
 	}
 	
 	/**
 	 * Metodo auxiliar de getFreqQuery(...)
 	 * 
-	 * El metodo utiliza la recursividad para buscar la frecuencia de
+	 * El metodo utiliza la recursividad para obtener la frecuencia de
 	 * una consulta.
 	 * 
 	 * Va comprobando los hijos de cada nodo hasta llegar a la ultima
-	 * letra de la consulta, de la cual obtiene la frecuencia. 
+	 * letra de la consulta. Se comprueba que el nodo asignado a la ultima
+	 * letra de la consulta tenga un nodo hoja del cual se obtiene la
+	 * frecuencia. 
 	 * 
-	 * En caso de no encontrar ninguna letra devuelve 0.
+	 * En caso de no encontrar alguna letra devuelve 0.
 	 * 
 	 * 
 	 * @param nodo Nodo a comprobar
@@ -131,8 +126,8 @@ public class QueryDepotTree implements QueryDepotIF {
 	public ListIF<Query> listOfQueries(String prefix) {
 		
 		/*
-		 * Lo primero que se hara sera pasar las consultas almacenadas
-		 * en el arbol a una lista de consultas ListIF<Query>:
+		 * Primero se pasan las consultas almacenadas en el arbol 
+		 * a una lista de consultas ListIF<Query>:
 		 * 
 		 * 		1. Obtener las consultas almacenadas en forma de lista
 		 * 
@@ -146,62 +141,93 @@ public class QueryDepotTree implements QueryDepotIF {
 		 */
 		
 		//1. Obtener las consultas almacenadas en forma de lista
-		ListIF<Query> depositoConsultas = obtenerConsultas();
-		
+		ListIF<Query> depositoConsultas = obtenerListaConsultas(obtenerDeposito(), "");
+				
 		//2. Obtener lista con las palabras que empiezan con el prefijo
 		ListIF<Query> listaPrefijo = obtenerListaPrefijo(depositoConsultas, prefix);
-		
+				
 		//3. Obtener la frecuencia maxima
 		int frecuenciaMax = obtenerMaxFrecuencia(listaPrefijo);
 		
+		//4. Crear una lista ordenada de mayor a menor frecuencia
 		ListIF<Query> listaOrdenada = obtenerListaOrdenada(listaPrefijo, frecuenciaMax);
 		
+		//5. Ordenar lexicográficmente la lista
 		depositoConsultas = ordenarLexicograficamente(listaOrdenada, frecuenciaMax);
 		
 		return depositoConsultas;
 	}
-
-	/**
-	 * Devuelve una lista con las consultas almacenadas en el deposito
-	 * con implementacion en arbol.
-	 * 
-	 * @return listaConsultas Lista con todas las consultas almacenadas en el arbol
-	 */
-	public ListIF<Query> obtenerConsultas() {
-		ListIF<Query> listaConsultas = obtenerListaConsultas(primerNodo, "");
-		
-		return listaConsultas;
-	}
 	
-	public ListIF<Query> obtenerListaConsultas(GTreeIF<Query> nodo, String consulta){
+	/**
+	 * Devuelve una lista con las consultas almacenadas en el arbol
+	 * que contiene el deposito.
+	 * 
+	 * La idea es usar la recursividad para ir pasando de un nodo a otro en forma
+	 * equivalente a preorder. (Los nodos mas a la izquierda primero)
+	 * 
+	 * Cada nodo comprueba si tiene un hijo con una frecuencia mayor que 0 y,
+	 * en caso de tenerla, crea un query que almacena la cadena formada consulta
+	 * y la frecuencia del ultimo nodo iterado y añade ese query a una lista que
+	 * es utilizada por el nodo padre para almacenar las consultas encontradas.
+	 * 
+	 * La cadena consulta esta formada por el conjunto de letras en cada nodo que
+	 * ha sido recorrido hasta llegar al nodo actual. Esto permite que cuando se
+	 * encuentre un nodo con frecuencia mayor que 0 se tenga una cadena de caracteres
+	 * con el camino que se ha seguido hasta llegar al nodo actual.
+	 * 
+	 * @param nodo Nodo recursivo
+	 * @param consulta Texto de cada consulta obtenida
+	 * @return lr Lista de consultas
+	 */
+	private ListIF<Query> obtenerListaConsultas(GTreeIF<Query> nodo, String consulta){
+		
+		//Creamos una lista que guardara las consultas obtenidas hasta ahora
 		ListIF<Query> lr = new List<Query>();
 		
 		ListIF<GTreeIF<Query>> listaNodos = nodo.getChildren();
 		IteratorIF<GTreeIF<Query>> itr = listaNodos.iterator();
-		while(itr.hasNext()) {
+		while(itr.hasNext()) { //Iteramos los hijos de nodo
 			GTreeIF<Query> temp = itr.getNext();
 			
+			//Se van añadiendo los nodos recorridos a una cadena consulta
 			consulta = consulta.concat(temp.getRoot().getText());
 			
+			//Si encuentra un nodo hijo con frecuencia mayor que 0
+			//se crea un query de texto consulta y la frecuencia del nodo 
+			//actual y se añade a la lista que almacena las consultas obtenidas
 			if(temp.getRoot().getFreq()>0) {
 				Query q = new Query(consulta);
 				q.setFreq(temp.getRoot().getFreq());
 				lr.insert(q, lr.size()+1);
-			}else {
+			}else { //Si el nodo no tiene frecuencia mayor que 0
+				//Se comprueba si alguno de sus hijos contiene 
+				//frecuencia mayor que 0 y, se obtiene la lista
+				//con las consultas que han sido encontradas
 				ListIF<Query> l = obtenerListaConsultas(temp, consulta);
 				IteratorIF<Query> itrl = l.iterator();
-				while(itrl.hasNext()) {
+				while(itrl.hasNext()) { 
+					//Se añade cada consulta encontrada a la lista de este nodo
 					Query temp2 = itrl.getNext();
 					lr.insert(temp2, lr.size()+1);
 				}
 			}
-			consulta = acortarCadenaNVeces(consulta,  1);
+			
+			//Si el nodo al que se va ha cambiado no era 
+			//un nodo de frecuencia entonces acortar la cadena
+			//Esto se debe a que los nodos frecuencia tienen texto
+			//igual a "" y, como hay que acortar consulta a cada cambio
+			//de hijo que NO sea de frecuencia, entonces ponemos la condicion
+			//que detecte cuando un hijo es frecuencia y cuando no.
+			if(!temp.getRoot().getText().equals("")) {
+				consulta = acortarCadenaNVeces(consulta,  1);
+			}
+			
 		}
 		
 		return lr;
 	}
 	
-	//Acorta una cadena n veces por la derecha, eliminando las letras correspondientes
+	//Acorta una cadena n veces por la derecha, eliminando las letras mas a la derecha
 	private String acortarCadenaNVeces(String cadena, int n) {
 		return cadena.substring(0, cadena.length()-n);
 	}
@@ -259,6 +285,12 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @return frecuenciaMax - Maxima frecuencia de una consulta de la listaPrefijo
 	 */
 	 private int obtenerMaxFrecuencia(ListIF<Query> listaPrefijo) {
+		 
+		 /*
+		  * Itera una lista de consultas y almacena la frecuencia
+		  * maxima obtenida.
+		  */
+		 
 		 IteratorIF<Query> itr = listaPrefijo.iterator();
 		 int frecuenciaMax = 0;
 		 while(itr.hasNext()) {
@@ -284,7 +316,6 @@ public class QueryDepotTree implements QueryDepotIF {
 		ListIF<Query> listaOrdenada = new List<Query>();
 		
 		for(int i = frecuenciaMax; i > 0; i--) { //Para cada frecuencia	
-			
 			IteratorIF<Query> itr = listaPrefijo.iterator();
 			while(itr.hasNext()) { //Para cada palabra en listaPrefijo
 				Query temp = itr.getNext();
@@ -314,7 +345,6 @@ public class QueryDepotTree implements QueryDepotIF {
 		IteratorIF<Integer> itr = listaFrecuencias.iterator();
 		while(itr.hasNext()) { //Para cada frecuencia
 			int frecuencia = itr.getNext();
-			
 			//O(N)
 			//Obtenemos la lista de consultas con frecuencia i
 			ListIF<Query> listaMismaFrecuencia = obtenerMismaFrecuencia(listaOrdenada, frecuencia);
@@ -358,6 +388,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	
 	/**
 	* Devuelve una lista con consultas que tienen la misma frecuencia
+	* 
 	* @param listaOrdenada - Lista ordenada de mayor a menor frecuencia
 	* @param frequency - Frecuencia de las consultas
 	* @return listaMismaFrecuencia - Lista con consultas de la frecuencia especificada
@@ -470,10 +501,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @param q Texto de la consulta
 	 */
 	public void incFreqQuery(String q) {
-		if(primerNodo==null) {
-			System.out.println("null");
-		}
-		añadirConsulta(primerNodo, q, 0);
+		añadirConsulta(obtenerDeposito(), q, 0);
 	}
 
 	
@@ -485,12 +513,15 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * 
 	 * Primero comprueba si existe un nodo que contenga la letra actual en
 	 * la lista de hijos. En caso de que no haya letra se añade insertandola
-	 * en la lista de hijos y aumentando su frecuencia.
+	 * en la lista de hijos y aumenta su frecuencia.
 	 * 
-	 * Por otro lado, si hay un nodo con la letra, simplemente se aumenta la
-	 * frecuencia de este y se pasa a la siguiente letra mediante una llamada
-	 * recursiva al propio metodo pero aumentando i en 1 para poder comprobar
-	 * la siguiente letra en la secuencia del texto de la consulta.
+	 * Por otro lado, si hay un nodo con la letra, se comprueba si tiene un nodo 
+	 * hoja con su frecuencia y si efectivamente tiene uno se aumenta la frecuencia
+	 * de este en 1. Si no encuentra un nodo hoja con frecuencia entonces lo crea y
+	 * asigna su frecuencia a 1. En ambos casos se pasa a la siguiente letra tras
+	 * aumentar la frecuencia mediante una llamada recursiva al propio metodo pero 
+	 * aumentando i en 1 para poder comprobar la siguiente letra en la secuencia del 
+	 * texto de la consulta.
 	 * 
 	 * @param nodo Nodo con la letra a comprobar
 	 * @param q Texto de la consulta
@@ -527,8 +558,22 @@ public class QueryDepotTree implements QueryDepotIF {
 					if((i+1)==q.length()) {
 						//Obtenemos el nodo hoja que contiene la frecuencia y
 						//la aumentamos en 1.
+						
 						GTreeIF<Query> nodoFrecuencia = obtenerNodoHoja(temp);
-						nodoFrecuencia.getRoot().setFreq(nodoFrecuencia.getRoot().getFreq()+1);
+						
+						//Si tenia frecuencia 0
+						if(nodoFrecuencia==null) {
+							GTreeIF<Query> nodoFrecuenciaNuevo = new GTree<Query>();
+							nodoFrecuenciaNuevo.setRoot(new Query(""));
+							nodoFrecuenciaNuevo.getRoot().setFreq(1);
+							temp.addChild(1, nodoFrecuenciaNuevo);
+							
+							//Aumentamos el numero de consultas por 1
+							incrementarNumeroConsultas();
+						}else { //Si NO tenia frecuencia 0
+							nodoFrecuencia.getRoot().setFreq(nodoFrecuencia.getRoot().getFreq()+1);
+						}
+						
 					}
 					añadirConsulta(temp, q, i+1);
 				}
@@ -547,7 +592,12 @@ public class QueryDepotTree implements QueryDepotIF {
 					//Añadimos un nodo hoja que contiene la frecuencia y
 					//le asignamos el valor 1
 					GTreeIF<Query> nodoFrecuencia = new GTree<Query>();
+					nodoFrecuencia.setRoot(new Query(""));
 					nodoFrecuencia.getRoot().setFreq(1);
+					nuevoNodo.addChild(1, nodoFrecuencia);
+					
+					//Aumentamos el numero de consultas almacenadas
+					incrementarNumeroConsultas();
 				}
 				nuevoNodo.setRoot(nuevoQuery);
 				listaAux.insert(nuevoNodo, listaAux.size()+1);
@@ -557,15 +607,16 @@ public class QueryDepotTree implements QueryDepotIF {
 	}
 	
 	/**
-	 * Devuelve el nodo hoja de un nodo en concreto
+	 * Devuelve un nodo hoja hijo de nodo
 	 * @param nodo Nodo padre del nodo hoja
 	 */
 	private GTreeIF<Query> obtenerNodoHoja(GTreeIF<Query> nodo) {
 		
 		IteratorIF<GTreeIF<Query>> itr = nodo.getChildren().iterator();
-		while(itr.hasNext()) {
+		while(itr.hasNext()) { //Itera todos los hijos de nodo
 			GTreeIF<Query> temp = itr.getNext();
 			
+			//Si encuentra un nodo hoja como hijo de nodo
 			if(temp.isLeaf()) {
 				return temp;
 			}

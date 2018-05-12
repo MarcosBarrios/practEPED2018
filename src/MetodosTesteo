@@ -1,0 +1,84 @@
+public void imprimirArbolRecursivo(GTreeIF<Query> nodo) {
+	ListIF<GTreeIF<Query>> l = nodo.getChildren();
+	IteratorIF<GTreeIF<Query>> itr = l.iterator();
+	if(nodo.getRoot()!=null)System.out.println("Hijos de " + nodo.getRoot().getText() + ": ");
+	while(itr.hasNext()) {
+		GTreeIF<Query> temp = itr.getNext();
+		System.out.println();
+		System.out.print(temp.getRoot().getText() + "(" + temp.getRoot().getFreq() + ") | ");
+		imprimirArbolRecursivo(temp);
+	}
+}
+
+
+/*
+ * Imprime una lista de consultas con su frecuencia y su texto
+ * Ejemplo: 
+ *  
+ * (3) perrito
+ * (2) azucar
+ * (1) azpisdezeta
+ * 
+ * @param lista - Lista a imprimir
+ */
+//Metodo usado para debuging de la clase durante su desarrollo
+/*public void imprimirLista(ListIF<Query> lista) {
+	System.out.println();
+	System.out.println("\t||||||||imprimirLista(ListIF<Query> lista) method called: ");
+	System.out.println("\tTamaño de la lista: " + lista.size());
+	IteratorIF<Query> itr = lista.iterator();
+	while(itr.hasNext()) {
+		Query temp = itr.getNext();
+		System.out.println("\tFrecuencia = ("+ temp.getFreq() + ") " + 
+				", Texto = " + temp.getText());
+	}
+	System.out.println("\t----");
+	System.out.println();
+}*/
+
+
+//Metodo usado para debuging de la clase durante su desarrollo
+	 /*private ListIF<Query> copiarLista(ListIF<Query> lista){
+		 ListIF<Query> aux = new List<Query>();
+		 
+		 IteratorIF<Query> itr = lista.iterator();
+		 while(itr.hasNext()) {
+			 Query temp = itr.getNext();
+			 aux.insert(temp, aux.size()+1);
+		 }
+		 
+		 return aux;
+	 }*/
+	 
+/**
+ * Devuelve el numero de consultas en el deposito
+ * 
+ * @return aux Numero de consultas del deposito
+ */
+public int numQueries() {
+	//Obtenemos la lista de hijos hoja del nodo inicial del deposito
+	//El numero de consultas es igual al numero de frecuencias mayor
+	//que 0 almacenadas
+	return obtenerNumeroConsultas(primerNodo);
+}
+	
+/**
+ * Itera todos los hijos de un nodo y aumenta aux en 1 cada vez
+ * que encuentra una frecuencia diferente de 0.
+ * @param nodo Nodo a iterar
+ * @return aux Numero de hojas
+ */
+private int obtenerNumeroConsultas(GTreeIF<Query> nodo) {
+	int aux = 0;
+	ListIF<GTreeIF<Query>> listaAux = nodo.getChildren();
+	IteratorIF<GTreeIF<Query>> itr = listaAux.iterator();
+	while(itr.hasNext()) {
+		
+		GTreeIF<Query> temp = itr.getNext();
+		if(temp.isLeaf()) {
+			aux++;
+		}
+		aux = aux + obtenerNumeroConsultas(temp);
+	}
+	return aux;
+}

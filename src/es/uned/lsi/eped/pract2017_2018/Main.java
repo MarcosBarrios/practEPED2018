@@ -13,17 +13,13 @@ public class Main {
 		
 		//lectura de parámetros
 		
-		/*//estructura: L (lista) o T (árbol general)
+		//estructura: L (lista) o T (árbol general)
 		String estructure = args[0];
 		
 		//fichero con el depósito de queries
 		String pathDepot = args[1];
 		//fichero de operaciones
-		String pathOperations = args[2];*/
-		
-		String estructure = "T";
-		String pathDepot = "src/JdP-consultas.txt";
-		String pathOperations = "src/JdP-operaciones.txt";
+		String pathOperations = args[2];
 
 		//creación del depósito de acuerdo a la estructura seleccionada
 		QueryDepotIF QD = null;

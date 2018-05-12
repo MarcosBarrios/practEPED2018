@@ -12,14 +12,7 @@ public class QueryDepotList implements QueryDepotIF {
 
 	private ListIF<Query> deposito;
 	
-	/*
-	 * LAS PALABRAS MAS LARGAS VAN DEBAJO DE LAS MENOS CORTAS PARA UN MISMO
-	 * PREFIJO DE CONSULTA
-	 * 
-	 * "PERRO"
-	 * "PERRO QUE CHOCHEA"
-	 * 
-	 */
+	private int numeroConsultas;
 	
 	/**
 	 * Constructor de la clase
@@ -47,11 +40,29 @@ public class QueryDepotList implements QueryDepotIF {
 	}
 	
 	/**
+	 * Devuelve el deposito de consultas
+	 * 
+	 * @return deposito Deposito de consultas
+	 */
+	private ListIF<Query> obtenerDeposito(){
+		return deposito;
+	}
+	
+	/**
+	 * Incrementa el numero de consultas
+	 *	
+	 */
+	private void incrementarNumeroConsultas() {
+		numeroConsultas++;
+	}
+	
+	/**
 	 * Devuelve el numero de consultar que hay en el deposito
-	 * @return deposito.size() - Tamaño del deposito
+	 * 
+	 * @return numeroConsultas Numero de consultass en el deposito
 	 */
 	public int numQueries() {
-		return deposito.size();
+		return numeroConsultas;
 	}
 
 	/**
@@ -61,7 +72,7 @@ public class QueryDepotList implements QueryDepotIF {
 	 */
 	public int getFreqQuery(String q) {
 		int frecuencia = 0;
-		IteratorIF<Query> itr = deposito.iterator();
+		IteratorIF<Query> itr = obtenerDeposito().iterator();
 		
 		while(itr.hasNext()) {
 			Query temp = itr.getNext();
@@ -219,87 +230,8 @@ public class QueryDepotList implements QueryDepotIF {
 			}
 		}
 		
-		//Una vez tenemos la lista la iteramos entera
-		//por cada consulta que hay en ella
-		/*for(int j = 0; j < lista.size(); j++) {		
-			int posSustitucion = 1;
-			imprimirLista(lista);
-			System.out.println();
-			//int posSustitucion = 0;
-			Query temp1 = listaCopiaMismaFrecuencia.get(j+1);
-			System.out.println();
-			System.out.println("- - - - - - - - - - - - - - - - - - - - ");
-			System.out.println("- Nueva iteracion: temp1 = " + temp1.getText());
-			
-			//Por cada consulta que haya en la lista iteramos toda la lista
-			//de nuevo para comparar su lexicografia
-			Query temp2 = null;
-			for(int u = 0; u < lista.size(); u++) {
-				temp2 = lista.get(u+1);
-				System.out.println(" - Nueva iteracion: temp2 = " + temp2.getText());
-				if(compararLexicograficamente(temp2.getText(), temp1.getText())==1 &&
-						!((u+1) < posSustitucion)) {
-					//si !(pos temp2 < pos susti)
-					//***************IMPLEMENTAR OPCION PARA NO SUSTITUIR SI LAS CONSULTAS ESTAN ORDENADAS COMO DEBERIAN
-					
-					System.out.println(temp2.getText() + 
-							" (temp2) es menor que " +
-							temp1.getText() + " (temp1) (lexicograficamente)");
-					
-					//Sustituimos temp2 en la posicion de temp 1 y
-					//temp1 en la posicion que tenia temp2
-					Query aux = new Query(temp1.getText());
-					aux.setFreq(temp1.getFreq());
-					System.out.println(" * * * * * temp1 copiado en aux");
-					System.out.println(" * * * * * aux: " + aux.getText() + 
-							"(" + aux.getFreq() + ")");
-					lista.set(posSustitucion, temp2);
-					System.out.println(" * * * * Sustituimos temp2 en la posicion de temp1 (" + (posSustitucion) + ")");
-					imprimirLista(lista);
-					System.out.println("* * * *temp1 POS SUS: " + temp1.getText());
-					lista.set(u+1, aux);
-					System.out.println(" * * * * u+1 (aux susti): " + (u+1));
-					System.out.println(" * * * *Sustituimos temp1 en la posicion que temp2 tenia");
-					imprimirLista(lista);
-					
-					posSustitucion++;
-					System.out.println("********* Sumado posSustitucion: " + posSustitucion);
-					System.out.println("/////////////////////////////////////////////");
-				}else {
-					System.out.println("\tNo hace falta sustuticion");
-					System.out.println();
-				}
-			}
-		}*/
-		
-		
 		return lista;
 	}
-	
-	/*
-	 * Imprime una lista de consultas con su frecuencia y su texto
-	 * Ejemplo: 
-	 *  
-	 * (3) perrito
-	 * (2) azucar
-	 * (1) azpisdezeta
-	 * 
-	 * @param lista - Lista a imprimir
-	 */
-	//Metodo usado para debuging de la clase durante su desarrollo
-	/*public void imprimirLista(ListIF<Query> lista) {
-		System.out.println();
-		System.out.println("\t||||||||imprimirLista(ListIF<Query> lista) method called: ");
-		System.out.println("\tTamaño de la lista: " + lista.size());
-		IteratorIF<Query> itr = lista.iterator();
-		while(itr.hasNext()) {
-			Query temp = itr.getNext();
-			System.out.println("\tFrecuencia = ("+ temp.getFreq() + ") " + 
-					", Texto = " + temp.getText());
-		}
-		System.out.println("\t----");
-		System.out.println();
-	}*/
 	
 	/**
 	 * Devuelve una lista con consultas que tienen la misma frecuencia
@@ -366,19 +298,6 @@ public class QueryDepotList implements QueryDepotIF {
 		
 		 return frecuenciaMax;
 	 }
-	 
-	//Metodo usado para debuging de la clase durante su desarrollo
-	 /*private ListIF<Query> copiarLista(ListIF<Query> lista){
-		 ListIF<Query> aux = new List<Query>();
-		 
-		 IteratorIF<Query> itr = lista.iterator();
-		 while(itr.hasNext()) {
-			 Query temp = itr.getNext();
-			 aux.insert(temp, aux.size()+1);
-		 }
-		 
-		 return aux;
-	 }*/
 	
 	/**
 	 * Obtencion de una lista de palabras que tengan el prefijo
@@ -389,7 +308,7 @@ public class QueryDepotList implements QueryDepotIF {
 	 */
 	 private ListIF<Query> obtenerListaPrefijo(String prefijo){
 		 ListIF<Query> aux = new List<Query>();
-		 IteratorIF<Query> itr = deposito.iterator();
+		 IteratorIF<Query> itr = obtenerDeposito().iterator();
 		
 		 if(prefijo.length()>=0) {
 			 while(itr.hasNext()) { //Por cada palabra en el deposito
@@ -469,26 +388,40 @@ public class QueryDepotList implements QueryDepotIF {
 	 * @param q - Consulta a incrementar la frecuencia
 	 */
 	public void incFreqQuery(String q) {
-		IteratorIF<Query> itr = deposito.iterator();
+		IteratorIF<Query> itr = obtenerDeposito().iterator();
 		boolean encontrado = false;
 		
+		//Si no hay consultas guardadas en el deposito
 		if(numQueries()==0) {
+			//Directamente añadimos la consulta de texto q y frecuencia 1
 			Query query = new Query(q);
 			query.setFreq(query.getFreq()+1);
-			deposito.insert(query, 1);
-		}else {
-			while(itr.hasNext()) {
+			obtenerDeposito().insert(query, 1);
+			
+			//Aumentamos en 1 el numero de consultas
+			incrementarNumeroConsultas();
+		}else { //Si hay consultas almacenadas
+			while(itr.hasNext()) { //Iterar las consultas
 				Query temp = itr.getNext();
+				
+				//Si una consulta se llama igual que q
 				if(temp.getText().equals(q)) {
+					//En vez de añadir una consulta a parte simplemente
+					//aumentamos la frecuencia de la consulta existente
 					temp.setFreq(temp.getFreq()+1);
 					encontrado = true;
 				}
 			}
 			
+			//Si no se ha encontado una consulta con el mismo texto q
 			if(!encontrado) {
+				//Se añade una consulta nueva
 				Query query = new Query(q);
 				query.setFreq(query.getFreq()+1);
-				deposito.insert(query, deposito.size()+1);
+				obtenerDeposito().insert(query, obtenerDeposito().size()+1);
+				
+				//Aumentamos en 1 el numero de consultas
+				incrementarNumeroConsultas();
 			}
 		}
 	}
