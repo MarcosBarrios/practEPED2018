@@ -82,3 +82,33 @@ private int obtenerNumeroConsultas(GTreeIF<Query> nodo) {
 	}
 	return aux;
 }
+
+
+/**
+	 * Devuelve la frecuencia maxima de las consultas almacenadas en un arbol
+	 * 
+	 * @param nodo Nodo recursivo
+	 * @return frecuenciaMax Frecuencia maxima de las consultas almacenadas en nodo
+	 */
+	public int obtenerFrecuenciaMaxima(GTreeIF<Query> nodo) {
+		int frecuenciaMax = 0;
+
+		ListIF<GTreeIF<Query>> l = nodo.getChildren();
+		IteratorIF<GTreeIF<Query>> itr = l.iterator();
+		while(itr.hasNext()) { //Iteramos cada nodo hijo de nodo (parametro)
+			GTreeIF<Query> temp = itr.getNext();
+			
+			//Iteramos cada nodo hijo de temp
+			IteratorIF<Query> itr2 = temp.iterator(GTreeIF.IteratorModes.PREORDER);
+			while(itr2.hasNext()) {
+				Query temp2 = itr2.getNext();
+				//Si la frecuencia de temp es mayor que frecuenciaMax se asigna
+				//la frecuencia de temp a frecuenciaMax
+				if(temp2.getFreq()>frecuenciaMax) {
+					frecuenciaMax = temp2.getFreq();
+				}
+			}
+		}
+		
+		return frecuenciaMax;
+	}

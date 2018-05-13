@@ -18,13 +18,11 @@ public class TestQueryDepotTree {
 	public void testAddObtenerArbolPrefijo() throws IOException {
 		QueryDepotTree qdt = new QueryDepotTree("src/Debugging_Consultas.txt");
 		ListIF<Query> l = qdt.listOfQueries("car");
-		
 		IteratorIF<Query> itr = l.iterator();
 		while(itr.hasNext()) {
 			Query temp = itr.getNext();
-			System.out.println(temp.getText() + "(" + temp.getFreq() + ")");
+			System.out.println( temp.getText() + "(" + temp.getFreq() + ")");
 		}
-		
 	}
 	
 	@Test
