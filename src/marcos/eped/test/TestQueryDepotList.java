@@ -15,6 +15,13 @@ import es.uned.lsi.eped.pract2017_2018.QueryDepotList;
 public class TestQueryDepotList {
 	
 	@Test
+	public void testAddgetFreqQuery() throws IOException {
+		QueryDepotList qdl = new QueryDepotList("src/n5000.txt");
+		qdl.listOfQueries("car tree");
+		
+	}
+	
+	@Test
 	public void testAddIncFrecuency() {
 		QueryDepotList qdl1 = new QueryDepotList();
 		qdl1.incFreqQuery("holaaa");
@@ -52,10 +59,10 @@ public class TestQueryDepotList {
 		}
 	}
 	
-	@Test
+	/*@Test
 	public void testAddnumQueries() throws IOException{
 		QueryDepotList qdl = new QueryDepotList("src/JdP-consultas.txt");
 		assertEquals(12108, qdl.numQueries());
-	}
+	}*/
 
 }

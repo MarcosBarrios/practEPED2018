@@ -220,8 +220,7 @@ public class QueryDepotList implements QueryDepotIF {
 				
 				//Si temp2 es menor que temp1 lexicograficamente
 				//O si temp2 es igual que temp1 pero la consulta es mas pequeña
-				if(comparacion==1 || 
-						(comparacion==0 && masPequeño<0) ) {
+				if(comparacion==1 || (comparacion==0 && masPequeño<0) ) {
 					Query aux = new Query(temp2.getText());
 					aux.setFreq(temp2.getFreq());
 					lista.set(i+1, temp1);
@@ -307,34 +306,37 @@ public class QueryDepotList implements QueryDepotIF {
 	 * @return aux - Lista con las palabras que tienen el prefijo
 	 */
 	 private ListIF<Query> obtenerListaPrefijo(String prefijo){
+		 
 		 ListIF<Query> aux = new List<Query>();
 		 IteratorIF<Query> itr = obtenerDeposito().iterator();
 		
 		 if(prefijo.length()>=0) {
+			 
 			 while(itr.hasNext()) { //Por cada palabra en el deposito
+				 
 				 Query temp = itr.getNext();
 				 int tamañoPalabra = temp.getText().length();
 				 int aciertos = 0;
 				
-				//Si el tamaño de la palabra del deposito es mayor o igual que el prefijo
+				 //Si el tamaño de la palabra del deposito es mayor o igual que el prefijo
 				 if(tamañoPalabra >= prefijo.length()) {
-					
-					//Comprobamos que los caracteres de la consulta coinciden
-					//con los caracteres del prefijo (los (prefijo.length()) primeros
-					//caracteres nada mas)
-					for(int i = 0; i < prefijo.length(); i++) {
-						String textoQuery = temp.getText().toLowerCase();
+					 
+					 //Comprobamos que los caracteres de la consulta coinciden
+					 //con los caracteres del prefijo (los (prefijo.length()) primeros
+					 //caracteres nada mas)
+					 for(int i = 0; i < prefijo.length(); i++) {
+						 String textoQuery = temp.getText().toLowerCase();
 						
-						if(textoQuery.charAt(i) == prefijo.charAt(i)) {
-							aciertos++; //sumamos 1 por cada acierto de caracter
-						}
-					}
-				}
+						 if(textoQuery.charAt(i) == prefijo.charAt(i)) {
+							 aciertos++; //sumamos 1 por cada acierto de caracter
+						 }
+					 }
+				 }
 				
-				if(aciertos == prefijo.length()) {
-					aux.insert(temp, aux.size()+1); //La palabra cumple con los requisitos
-				}
-			}
+				 if(aciertos == prefijo.length()) {
+					 aux.insert(temp, aux.size()+1); //La palabra cumple con los requisitos
+				 }
+			 }
 		 }else {
 			 while(itr.hasNext()) {
 				 Query temp = itr.getNext();
