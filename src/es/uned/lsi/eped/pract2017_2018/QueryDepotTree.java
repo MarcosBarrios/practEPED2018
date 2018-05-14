@@ -181,27 +181,7 @@ public class QueryDepotTree implements QueryDepotIF {
 		return raiz;
 	}
 	
-	/**
-	 * Añade las consultas de un arbol a otro arbol.
-	 * @param añadiendo Arbol al que se le añaden las consultas
-	 * @param añadido Arbol con las consultas a añadir
-	 * @return raiz Arbol añadiendo con las consultas de añadido añadidas.
-	 */
-	private GTreeIF<Query> incluirConsultasArbol(GTreeIF<Query> añadiendo, GTreeIF<Query> añadido, 
-			String prefijo, String consulta){
-		
-		ListIF<Query> l = obtenerListaConsultas(añadido, 0, "", "");
-		IteratorIF<Query> itr = l.iterator();
-		while(itr.hasNext()) {
-			Query temp = itr.getNext();
-			
-			//Quitamos el prefijo del principio de la consulta para no repetirlo
-			String nombreConsulta = temp.getText().substring(prefijo.length(), temp.getText().length());
-			añadirConsulta(añadiendo, temp.getFreq(), nombreConsulta, 0);
-		}
-		
-		return añadiendo;
-	}
+//	
 	
 	/**
 	 * Devuelve la lista de frecuencias ordenadas de mayor a menor.
