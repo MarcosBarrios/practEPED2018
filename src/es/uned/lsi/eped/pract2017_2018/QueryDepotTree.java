@@ -215,8 +215,8 @@ public class QueryDepotTree implements QueryDepotIF {
 		
 		//Ordenamos la lista obtenida de mayor a menor
 		//mediante el logaritmo burbuja
-		for(int i = 2; i <=  l.size(); i++) {
-			for(int j = 0; j <= l.size()-1; j++) {
+		for(int i = 0; i <  l.size(); i++) {
+			for(int j = 0; j < l.size(); j++) {
 				int freq1 = l.get(j);
 				int freq2 = l.get(j+1);
 				
