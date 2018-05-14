@@ -167,6 +167,8 @@ public class QueryDepotTree implements QueryDepotIF {
 		//Obtenemos el arbol con las consultas que empiezan por el prefijo
 		GTreeIF<Query> arbolPrefijo = obtenerArbolPrefijo(obtenerDeposito(), prefix, 0);
 		
+//		imprimirArbolRecursivo(arbolPrefijo);
+		
 		//Obtenemos la frecuencia maxima de las consultas almacenadas en arbolPrefijo
 		//int frecuenciaMax = obtenerFrecuenciaMaxima(arbolPrefijo);
 		
@@ -323,15 +325,15 @@ public class QueryDepotTree implements QueryDepotIF {
 				GTreeIF<Query> temp2 = l.get(i+1);
 				
 				//Compara la lexicografia de temp2 con respecto a temp1
-				//Si comparacion==1 entonces temp2 va antes de temp1 lexicograficamente
+				//Si comparacion==-1 entonces temp2 va antes de temp1 lexicograficamente
 				//Si comparacion==0 entonces temp2 y temp1 son iguales lexicograficamente
-				//Si comparacion==-1 entonces temp2 va despues de temp1 lexicograficamente
+				//Si comparacion==1 entonces temp2 va despues de temp1 lexicograficamente
 				//O(K) (K = nº caracteres consulta con menos caracteres)
 				int comparacion = compararLexicograficamente(temp1.getRoot().getText(), temp2.getRoot().getText());
 				
 				//Si temp2 es menor que temp1 lexicograficamente
 				//O si temp2 es igual que temp1 pero la consulta es mas pequeña
-				if(comparacion==1 || comparacion==0) {
+				if(comparacion==-1 || comparacion==0) {
 					//Procedemos a intercambiar las posicones de 
 					//los nodos comparados
 					GTreeIF<Query> aux = temp2;
@@ -539,6 +541,9 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * Metodo usado para comparar dos palabras lexicograficamente
 	 * @return 1 si a < b , 0 si a = b, -1 si a > b
 	 */
+	
+	
+	
 	 public int compararLexicograficamente(String a, String b) {
 		int tamañoPalabra = 0;
 		
@@ -562,7 +567,9 @@ public class QueryDepotTree implements QueryDepotIF {
 		return 0; //caso a = b
 	}
 	
-	/**
+
+	 
+	 /**
 	 * Añade una consulta al deposito
 	 * 
 	 * @param q Texto de la consulta

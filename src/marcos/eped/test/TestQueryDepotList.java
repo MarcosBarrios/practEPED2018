@@ -14,11 +14,11 @@ import es.uned.lsi.eped.pract2017_2018.QueryDepotList;
 
 public class TestQueryDepotList {
 	
-	@Test
-	public void testAddgetFreqQuery() throws IOException {
-		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
-		assertEquals(1, qdl.compararLexicograficamente("car tree sculture" , "car over tree"));
-	}
+//	@Test
+//	public void testAddgetFreqQuery() throws IOException {
+//		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
+//		assertEquals(1, qdl.compararLexicograficamente("car tree sculture" , "car over tree"));
+//	}
 	
 	@Test
 	public void testAddIncFrecuency() {
@@ -50,12 +50,12 @@ public class TestQueryDepotList {
 	public void testAddListOfQueries() throws IOException {
 		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
 		
-		ListIF<Query> l = qdl.listOfQueries("car");
-		IteratorIF<Query> itr = l.iterator();
-		while(itr.hasNext()) {
-			Query temp = itr.getNext();
-			System.out.println( "(" + temp.getFreq() + ") " + temp.getText());
-		}
+		ListIF<Query> l = qdl.listOfQueries("auto");
+//		IteratorIF<Query> itr = l.iterator();
+//		while(itr.hasNext()) {
+//			Query temp = itr.getNext();
+//			System.out.println( "(" + temp.getFreq() + ") " + temp.getText());
+//		}
 	}
 	
 	/*@Test

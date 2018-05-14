@@ -23,34 +23,39 @@ public class TestQueryDepotTree {
 //		q.setRoot(new Query(""));
 //		
 //		GTreeIF<Query> q2 = new GTree<Query>();
-//		Query query1 = new Query("s");
+//		Query query1 = new Query("car tree sculture");
 //		q2.setRoot(query1);
 //		
 //		GTreeIF<Query> q3 = new GTree<Query>();
-//		Query query2 = new Query("o");
+//		Query query2 = new Query("car over tree");
 //		q3.setRoot(query2);
 //		
-//		q.addChild(1, q3);
-//		q.addChild(2, q2);
+//		GTreeIF<Query> q4 = new GTree<Query>();
+//		Query query3 = new Query("car tree horses");
+//		q4.setRoot(query3);
+//		
+//		q.addChild(1, q4);
+//		q.addChild(2, q3);
+//		q.addChild(3, q2);
 //		ListIF<GTreeIF<Query>> l = qdt.ordenarLexicograficamente(q);
 //		IteratorIF<GTreeIF<Query>> itr = l.iterator();
 //		while(itr.hasNext()) {
 //			GTreeIF<Query> temp = itr.getNext();
 //			System.out.println(temp.getRoot().getText());
 //		}
-//		assertEquals(1, qdt.compararLexicograficamente("h", "o"));
+//		assertEquals(1, qdt.compararLexicograficamente("t", "o"));
 //	}
 	
 	@Test
 	public void testAddObtenerArbolPrefijo() throws IOException {
 		QueryDepotTree qdt = new QueryDepotTree("src/Debugging_Consultas.txt");
-		ListIF<Query> l = qdt.listOfQueries("car");
-		IteratorIF<Query> itr = l.iterator();
-		System.out.println("Imprimir lista");
-		while(itr.hasNext()) {
-			Query temp = itr.getNext();
-			System.out.println( temp.getText() + "(" + temp.getFreq() + ")");
-		}
+		ListIF<Query> l = qdt.listOfQueries("auto");
+//		IteratorIF<Query> itr = l.iterator();
+//		System.out.println("Imprimir lista (" + l.size() + ")");
+//		while(itr.hasNext()) {
+//			Query temp = itr.getNext();
+//			System.out.println( temp.getText() + "(" + temp.getFreq() + ")");
+//		}
 	}
 	
 	@Test

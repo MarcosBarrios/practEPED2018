@@ -211,9 +211,9 @@ public class QueryDepotList implements QueryDepotIF {
 				Query temp2 = lista.get(i+1);
 				
 				//Compara la lexicografia de temp2 con respecto a temp1
-				//Si comparacion==1 entonces temp2 va antes de temp1 lexicograficamente
+				//Si comparacion==-1 entonces temp2 va antes de temp1 lexicograficamente
 				//Si comparacion==0 entonces temp2 y temp1 son iguales lexicograficamente
-				//Si comparacion==-1 entonces temp2 va despues de temp1 lexicograficamente
+				//Si comparacion==1 entonces temp2 va despues de temp1 lexicograficamente
 				//O(K) (K = nº caracteres consulta con menos caracteres)
 				int comparacion = compararLexicograficamente(temp2.getText(), temp1.getText());
 				int masPequeño = temp2.getText().length()-temp1.getText().length();			
