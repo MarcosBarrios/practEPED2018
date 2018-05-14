@@ -358,7 +358,7 @@ public class QueryDepotList implements QueryDepotIF {
 	 * Metodo usado para comparar dos palabras lexicograficamente
 	 * @return 1 si a < b , 0 si a = b, -1 si a > b
 	 */
-	 private int compararLexicograficamente(String a, String b) {
+	 public int compararLexicograficamente(String a, String b) {
 		int tamañoPalabra = 0;
 		
 		//Calculamos el tamaño de la palabra de menor tamaño

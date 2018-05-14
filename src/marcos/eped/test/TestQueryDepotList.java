@@ -16,9 +16,8 @@ public class TestQueryDepotList {
 	
 	@Test
 	public void testAddgetFreqQuery() throws IOException {
-		QueryDepotList qdl = new QueryDepotList("src/n5000.txt");
-		qdl.listOfQueries("car tree");
-		
+		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
+		assertEquals(1, qdl.compararLexicograficamente("car tree sculture" , "car over tree"));
 	}
 	
 	@Test
@@ -51,7 +50,7 @@ public class TestQueryDepotList {
 	public void testAddListOfQueries() throws IOException {
 		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
 		
-		ListIF<Query> l = qdl.listOfQueries("cappuccino");
+		ListIF<Query> l = qdl.listOfQueries("car");
 		IteratorIF<Query> itr = l.iterator();
 		while(itr.hasNext()) {
 			Query temp = itr.getNext();
