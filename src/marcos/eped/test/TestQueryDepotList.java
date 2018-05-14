@@ -42,9 +42,9 @@ public class TestQueryDepotList {
 	
 	@Test
 	public void testAddListOfQueries() throws IOException {
-		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
+		QueryDepotList qdl = new QueryDepotList("src/JdP-consultas.txt");
 		
-		ListIF<Query> l = qdl.listOfQueries("cappuccino");
+		ListIF<Query> l = qdl.listOfQueries("bandera");
 		IteratorIF<Query> itr = l.iterator();
 		while(itr.hasNext()) {
 			Query temp = itr.getNext();
@@ -52,10 +52,10 @@ public class TestQueryDepotList {
 		}
 	}
 	
-	@Test
+	/*@Test
 	public void testAddnumQueries() throws IOException{
 		QueryDepotList qdl = new QueryDepotList("src/JdP-consultas.txt");
 		assertEquals(12108, qdl.numQueries());
-	}
+	}*/
 
 }

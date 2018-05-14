@@ -114,7 +114,7 @@ public class QueryDepotList implements QueryDepotIF {
 		//imprimirLista(listaOrdenada);
 		
 		//Ordenar lexicograficamente la lista
-		listaLexicografica = ordenarLexicograficamente(listaOrdenada, frecuenciaMax);
+		listaLexicografica = obtenerListaLexicografica(listaOrdenada, frecuenciaMax);
 		
 		//imprimirLista(listaLexicografica);
 		
@@ -150,7 +150,7 @@ public class QueryDepotList implements QueryDepotIF {
 	 * @param frecuenciaMax - Frecuencia maxima de las consultas en listaOrdenada
 	 * @return listaLexicografica - Lista ordenada lexicograficamente y de mayor a menor frecuencia
 	 */
-	private ListIF<Query> ordenarLexicograficamente(ListIF<Query> listaOrdenada, int frecuenciaMax) {
+	private ListIF<Query> obtenerListaLexicografica(ListIF<Query> listaOrdenada, int frecuenciaMax) {
 		ListIF<Integer> listaFrecuencias = obtenerFrecuencias(listaOrdenada);
 		
 		//O(N*N*N*K)
@@ -164,7 +164,7 @@ public class QueryDepotList implements QueryDepotIF {
 			
 			//O(N*N*K) (K = nº minimo de caracteres entre dos consultas)
 			//Obtenemos la lista ordenada lexicograficamente con la frecuencia especifica
-			listaMismaFrecuencia = listaLexicografica(listaMismaFrecuencia);
+			listaMismaFrecuencia = ordenarLexicograficamente(listaMismaFrecuencia);
 			
 			//Obtenemos la primera posicion de listaMismaFrecuencia con respecto a 
 			//listaOrdenada para poder sustituir la listaMismaFrecuencia en la posicion 
@@ -201,7 +201,7 @@ public class QueryDepotList implements QueryDepotIF {
 	
 	//Ordena una lista ordenada por frecuencias a una lista ordenada 
 	//por frecuencias y lexicograficamente
-	private ListIF<Query> listaLexicografica(ListIF<Query> listaMismaFrecuencia) {
+	private ListIF<Query> ordenarLexicograficamente(ListIF<Query> listaMismaFrecuencia) {
 		ListIF<Query> lista = listaMismaFrecuencia;
 		
 		//O(N*N*K)
@@ -211,17 +211,16 @@ public class QueryDepotList implements QueryDepotIF {
 				Query temp2 = lista.get(i+1);
 				
 				//Compara la lexicografia de temp2 con respecto a temp1
-				//Si comparacion==1 entonces temp2 va antes de temp1 lexicograficamente
+				//Si comparacion==-1 entonces temp2 va antes de temp1 lexicograficamente
 				//Si comparacion==0 entonces temp2 y temp1 son iguales lexicograficamente
-				//Si comparacion==-1 entonces temp2 va despues de temp1 lexicograficamente
+				//Si comparacion==1 entonces temp2 va despues de temp1 lexicograficamente
 				//O(K) (K = nº caracteres consulta con menos caracteres)
 				int comparacion = compararLexicograficamente(temp2.getText(), temp1.getText());
 				int masPequeño = temp2.getText().length()-temp1.getText().length();			
 				
 				//Si temp2 es menor que temp1 lexicograficamente
 				//O si temp2 es igual que temp1 pero la consulta es mas pequeña
-				if(comparacion==1 || 
-						(comparacion==0 && masPequeño<0) ) {
+				if(comparacion==1 || (comparacion==0 && masPequeño<0) ) {
 					Query aux = new Query(temp2.getText());
 					aux.setFreq(temp2.getFreq());
 					lista.set(i+1, temp1);
@@ -307,34 +306,37 @@ public class QueryDepotList implements QueryDepotIF {
 	 * @return aux - Lista con las palabras que tienen el prefijo
 	 */
 	 private ListIF<Query> obtenerListaPrefijo(String prefijo){
+		 
 		 ListIF<Query> aux = new List<Query>();
 		 IteratorIF<Query> itr = obtenerDeposito().iterator();
 		
 		 if(prefijo.length()>=0) {
+			 
 			 while(itr.hasNext()) { //Por cada palabra en el deposito
+				 
 				 Query temp = itr.getNext();
 				 int tamañoPalabra = temp.getText().length();
 				 int aciertos = 0;
 				
-				//Si el tamaño de la palabra del deposito es mayor o igual que el prefijo
+				 //Si el tamaño de la palabra del deposito es mayor o igual que el prefijo
 				 if(tamañoPalabra >= prefijo.length()) {
-					
-					//Comprobamos que los caracteres de la consulta coinciden
-					//con los caracteres del prefijo (los (prefijo.length()) primeros
-					//caracteres nada mas)
-					for(int i = 0; i < prefijo.length(); i++) {
-						String textoQuery = temp.getText().toLowerCase();
+					 
+					 //Comprobamos que los caracteres de la consulta coinciden
+					 //con los caracteres del prefijo (los (prefijo.length()) primeros
+					 //caracteres nada mas)
+					 for(int i = 0; i < prefijo.length(); i++) {
+						 String textoQuery = temp.getText().toLowerCase();
 						
-						if(textoQuery.charAt(i) == prefijo.charAt(i)) {
-							aciertos++; //sumamos 1 por cada acierto de caracter
-						}
-					}
-				}
+						 if(textoQuery.charAt(i) == prefijo.charAt(i)) {
+							 aciertos++; //sumamos 1 por cada acierto de caracter
+						 }
+					 }
+				 }
 				
-				if(aciertos == prefijo.length()) {
-					aux.insert(temp, aux.size()+1); //La palabra cumple con los requisitos
-				}
-			}
+				 if(aciertos == prefijo.length()) {
+					 aux.insert(temp, aux.size()+1); //La palabra cumple con los requisitos
+				 }
+			 }
 		 }else {
 			 while(itr.hasNext()) {
 				 Query temp = itr.getNext();

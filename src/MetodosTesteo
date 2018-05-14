@@ -10,7 +10,6 @@ public void imprimirArbolRecursivo(GTreeIF<Query> nodo) {
 	}
 }
 
-
 /*
  * Imprime una lista de consultas con su frecuencia y su texto
  * Ejemplo: 
@@ -82,3 +81,116 @@ private int obtenerNumeroConsultas(GTreeIF<Query> nodo) {
 	}
 	return aux;
 }
+
+
+/**
+	 * Devuelve la frecuencia maxima de las consultas almacenadas en un arbol
+	 * 
+	 * @param nodo Nodo recursivo
+	 * @return frecuenciaMax Frecuencia maxima de las consultas almacenadas en nodo
+	 */
+	public int obtenerFrecuenciaMaxima(GTreeIF<Query> nodo) {
+		int frecuenciaMax = 0;
+
+		ListIF<GTreeIF<Query>> l = nodo.getChildren();
+		IteratorIF<GTreeIF<Query>> itr = l.iterator();
+		while(itr.hasNext()) { //Iteramos cada nodo hijo de nodo (parametro)
+			GTreeIF<Query> temp = itr.getNext();
+			
+			//Iteramos cada nodo hijo de temp
+			IteratorIF<Query> itr2 = temp.iterator(GTreeIF.IteratorModes.PREORDER);
+			while(itr2.hasNext()) {
+				Query temp2 = itr2.getNext();
+				//Si la frecuencia de temp es mayor que frecuenciaMax se asigna
+				//la frecuencia de temp a frecuenciaMax
+				if(temp2.getFreq()>frecuenciaMax) {
+					frecuenciaMax = temp2.getFreq();
+				}
+			}
+		}
+		
+		return frecuenciaMax;
+	}
+	
+private void imprimirArbolRecursivo(GTreeIF<Query> nodo) {
+//		ListIF<GTreeIF<Query>> l = nodo.getChildren();
+//		IteratorIF<GTreeIF<Query>> itr = l.iterator();
+//		System.out.println();
+//		if(nodo.getRoot()!=null) {
+//			if(nodo.getRoot().getText().equals("")) {
+//				System.out.print("[" + "F(" + nodo.getRoot().getFreq() + ")]");
+//			}else {
+//				System.out.print("[" + nodo.getRoot().getText() + "(" + nodo.getRoot().getFreq() + ")]");
+//			}
+//		}
+//		while(itr.hasNext()) {
+//			GTreeIF<Query> temp = itr.getNext();
+//			System.out.print(" ");
+//			
+//			if(temp.getRoot().getText().equals("")) {
+//				System.out.print("F(" + temp.getRoot().getFreq() + ") | ");
+//			}else {
+//				System.out.print(temp.getRoot().getText() + "(" + temp.getRoot().getFreq() + ") | ");
+//			}
+//			imprimirArbolRecursivo(temp);
+//		}
+//	}
+
+				
+//Obtenemos la frecuencia maxima de las consultas almacenadas en arbolPrefijo
+//int frecuenciaMax = obtenerFrecuenciaMaxima(arbolPrefijo);
+
+//Obtenemos un arbol ordenado de mayor a menor frecuencia
+//GTreeIF<Query> arbolOrdenado = obtenerArbolMismaFrecuencia(arbolPrefijo, frecuencia, "", prefix);
+
+//	@Test
+//	public void testAddListaLexicografica() throws IOException {
+//		QueryDepotTree qdt = new QueryDepotTree("src/Debugging_Consultas.txt");
+//		GTreeIF<Query> q = new GTree<Query>();
+//		q.setRoot(new Query(""));
+//		
+//		GTreeIF<Query> q2 = new GTree<Query>();
+//		Query query1 = new Query("car tree sculture");
+//		q2.setRoot(query1);
+//		
+//		GTreeIF<Query> q3 = new GTree<Query>();
+//		Query query2 = new Query("car over tree");
+//		q3.setRoot(query2);
+//		
+//		GTreeIF<Query> q4 = new GTree<Query>();
+//		Query query3 = new Query("car tree horses");
+//		q4.setRoot(query3);
+//		
+//		q.addChild(1, q4);
+//		q.addChild(2, q3);
+//		q.addChild(3, q2);
+//		ListIF<GTreeIF<Query>> l = qdt.ordenarLexicograficamente(q);
+//		IteratorIF<GTreeIF<Query>> itr = l.iterator();
+//		while(itr.hasNext()) {
+//			GTreeIF<Query> temp = itr.getNext();
+//			System.out.println(temp.getRoot().getText());
+//		}
+//		assertEquals(1, qdt.compararLexicograficamente("t", "o"));
+//	}
+
+/**
+//	 * Añade las consultas de un arbol a otro arbol.
+//	 * @param añadiendo Arbol al que se le añaden las consultas
+//	 * @param añadido Arbol con las consultas a añadir
+//	 * @return raiz Arbol añadiendo con las consultas de añadido añadidas.
+//	 */
+//	private GTreeIF<Query> incluirConsultasArbol(GTreeIF<Query> añadiendo, GTreeIF<Query> añadido, 
+//			String prefijo, String consulta){
+//		
+//		ListIF<Query> l = obtenerListaConsultas(añadido, 0, "", "");
+//		IteratorIF<Query> itr = l.iterator();
+//		while(itr.hasNext()) {
+//			Query temp = itr.getNext();
+//			
+//			//Quitamos el prefijo del principio de la consulta para no repetirlo
+//			String nombreConsulta = temp.getText().substring(prefijo.length(), temp.getText().length());
+//			añadirConsulta(añadiendo, temp.getFreq(), nombreConsulta, 0);
+//		}
+//		
+//		return añadiendo;
+//	}
