@@ -16,7 +16,7 @@ public class TestQueryDepotTree {
 	@Test
 	public void testAddObtenerArbolPrefijo() throws IOException {
 		QueryDepotTree qdt = new QueryDepotTree("src/JdP-consultas.txt");
-		ListIF<Query> l = qdt.listOfQueries("cr");
+		ListIF<Query> l = qdt.listOfQueries("bandera");
 		IteratorIF<Query> itr = l.iterator();
 		System.out.println("Imprimir lista (" + l.size() + ")");
 		while(itr.hasNext()) {

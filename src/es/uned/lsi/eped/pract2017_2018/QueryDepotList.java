@@ -205,8 +205,8 @@ public class QueryDepotList implements QueryDepotIF {
 		ListIF<Query> lista = listaMismaFrecuencia;
 		
 		//O(N*N*K)
-		for(int j = 2; j <= lista.size(); j++) {
-			for(int i = 0; i < lista.size()-1; i++) {
+		for(int j = 0; j < lista.size(); j++) {
+			for(int i = 0; i < lista.size(); i++) {
 				Query temp1 = lista.get(i);
 				Query temp2 = lista.get(i+1);
 				

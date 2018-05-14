@@ -265,10 +265,10 @@ public class QueryDepotTree implements QueryDepotIF {
 		ListIF<GTreeIF<Query>> l = nodo.getChildren();
 		
 		//O(U*U) donde U es el numero de nodos
-		for(int i = 1; i <= l.size()-1; i++){
-			for(int j = 0; j <= l.size()-1; j++) {
-				GTreeIF<Query> temp1 = l.get(i);
-				GTreeIF<Query> temp2 = l.get(i+1);
+		for(int i = 0; i < l.size(); i++){
+			for(int j = 0; j < l.size(); j++) {
+				GTreeIF<Query> temp1 = l.get(j);
+				GTreeIF<Query> temp2 = l.get(j+1);
 				
 				//Compara la lexicografia de temp2 con respecto a temp1
 				//Si comparacion==-1 entonces temp2 va antes de temp1 lexicograficamente
@@ -293,8 +293,8 @@ public class QueryDepotTree implements QueryDepotIF {
 					//Procedemos a intercambiar las posicones de 
 					//los nodos comparados
 					GTreeIF<Query> aux = temp2;
-					l.set(i+1, temp1);
-					l.set(i, aux);
+					l.set(j+1, temp1);
+					l.set(j, aux);
 				}
 			}
 		}	

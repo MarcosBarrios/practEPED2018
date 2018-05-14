@@ -14,12 +14,6 @@ import es.uned.lsi.eped.pract2017_2018.QueryDepotList;
 
 public class TestQueryDepotList {
 	
-//	@Test
-//	public void testAddgetFreqQuery() throws IOException {
-//		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
-//		assertEquals(1, qdl.compararLexicograficamente("car tree sculture" , "car over tree"));
-//	}
-	
 	@Test
 	public void testAddIncFrecuency() {
 		QueryDepotList qdl1 = new QueryDepotList();
@@ -48,9 +42,9 @@ public class TestQueryDepotList {
 	
 	@Test
 	public void testAddListOfQueries() throws IOException {
-		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
+		QueryDepotList qdl = new QueryDepotList("src/JdP-consultas.txt");
 		
-		ListIF<Query> l = qdl.listOfQueries("gl");
+		ListIF<Query> l = qdl.listOfQueries("bandera");
 		IteratorIF<Query> itr = l.iterator();
 		while(itr.hasNext()) {
 			Query temp = itr.getNext();
