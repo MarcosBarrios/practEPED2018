@@ -114,7 +114,7 @@ public class QueryDepotList implements QueryDepotIF {
 		//imprimirLista(listaOrdenada);
 		
 		//Ordenar lexicograficamente la lista
-		listaLexicografica = ordenarLexicograficamente(listaOrdenada, frecuenciaMax);
+		listaLexicografica = obtenerListaLexicografica(listaOrdenada, frecuenciaMax);
 		
 		//imprimirLista(listaLexicografica);
 		
@@ -150,7 +150,7 @@ public class QueryDepotList implements QueryDepotIF {
 	 * @param frecuenciaMax - Frecuencia maxima de las consultas en listaOrdenada
 	 * @return listaLexicografica - Lista ordenada lexicograficamente y de mayor a menor frecuencia
 	 */
-	private ListIF<Query> ordenarLexicograficamente(ListIF<Query> listaOrdenada, int frecuenciaMax) {
+	private ListIF<Query> obtenerListaLexicografica(ListIF<Query> listaOrdenada, int frecuenciaMax) {
 		ListIF<Integer> listaFrecuencias = obtenerFrecuencias(listaOrdenada);
 		
 		//O(N*N*N*K)
@@ -164,7 +164,7 @@ public class QueryDepotList implements QueryDepotIF {
 			
 			//O(N*N*K) (K = nº minimo de caracteres entre dos consultas)
 			//Obtenemos la lista ordenada lexicograficamente con la frecuencia especifica
-			listaMismaFrecuencia = listaLexicografica(listaMismaFrecuencia);
+			listaMismaFrecuencia = ordenarLexicograficamente(listaMismaFrecuencia);
 			
 			//Obtenemos la primera posicion de listaMismaFrecuencia con respecto a 
 			//listaOrdenada para poder sustituir la listaMismaFrecuencia en la posicion 
@@ -201,12 +201,12 @@ public class QueryDepotList implements QueryDepotIF {
 	
 	//Ordena una lista ordenada por frecuencias a una lista ordenada 
 	//por frecuencias y lexicograficamente
-	private ListIF<Query> listaLexicografica(ListIF<Query> listaMismaFrecuencia) {
+	private ListIF<Query> ordenarLexicograficamente(ListIF<Query> listaMismaFrecuencia) {
 		ListIF<Query> lista = listaMismaFrecuencia;
 		
 		//O(N*N*K)
-		for(int j = 0; j < lista.size(); j++) {
-			for(int i = 0; i < lista.size(); i++) {
+		for(int j = 2; j <= lista.size(); j++) {
+			for(int i = 0; i < lista.size()-1; i++) {
 				Query temp1 = lista.get(i);
 				Query temp2 = lista.get(i+1);
 				
@@ -358,7 +358,7 @@ public class QueryDepotList implements QueryDepotIF {
 	 * Metodo usado para comparar dos palabras lexicograficamente
 	 * @return 1 si a < b , 0 si a = b, -1 si a > b
 	 */
-	 public int compararLexicograficamente(String a, String b) {
+	 private int compararLexicograficamente(String a, String b) {
 		int tamañoPalabra = 0;
 		
 		//Calculamos el tamaño de la palabra de menor tamaño

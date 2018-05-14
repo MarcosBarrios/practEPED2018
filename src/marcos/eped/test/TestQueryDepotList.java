@@ -50,7 +50,7 @@ public class TestQueryDepotList {
 	public void testAddListOfQueries() throws IOException {
 		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
 		
-		ListIF<Query> l = qdl.listOfQueries("auto");
+		ListIF<Query> l = qdl.listOfQueries("gl");
 		IteratorIF<Query> itr = l.iterator();
 		while(itr.hasNext()) {
 			Query temp = itr.getNext();

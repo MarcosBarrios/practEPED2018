@@ -13,7 +13,7 @@ import es.uned.lsi.eped.DataStructures.ListIF;
 public class QueryDepotTree implements QueryDepotIF {
 	
 	//Nodo raiz del deposito
-	public GTreeIF<Query> primerNodo;
+	private GTreeIF<Query> primerNodo;
 	
 	private int numeroConsultas;
 	
@@ -51,30 +51,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	private void incrementarNumeroConsultas() {
 		numeroConsultas++;
 	}
-	
-	public void imprimirArbolRecursivo(GTreeIF<Query> nodo) {
-		ListIF<GTreeIF<Query>> l = nodo.getChildren();
-		IteratorIF<GTreeIF<Query>> itr = l.iterator();
-		System.out.println();
-		if(nodo.getRoot()!=null) {
-			if(nodo.getRoot().getText().equals("")) {
-				System.out.print("[" + "F(" + nodo.getRoot().getFreq() + ")]");
-			}else {
-				System.out.print("[" + nodo.getRoot().getText() + "(" + nodo.getRoot().getFreq() + ")]");
-			}
-		}
-		while(itr.hasNext()) {
-			GTreeIF<Query> temp = itr.getNext();
-			System.out.print(" ");
-			
-			if(temp.getRoot().getText().equals("")) {
-				System.out.print("F(" + temp.getRoot().getFreq() + ") | ");
-			}else {
-				System.out.print(temp.getRoot().getText() + "(" + temp.getRoot().getFreq() + ") | ");
-			}
-			imprimirArbolRecursivo(temp);
-		}
-	}
+
 	
 	/**
 	 * Devuelve el numero de consultas en el deposito
@@ -166,15 +143,6 @@ public class QueryDepotTree implements QueryDepotIF {
 		
 		//Obtenemos el arbol con las consultas que empiezan por el prefijo
 		GTreeIF<Query> arbolPrefijo = obtenerArbolPrefijo(obtenerDeposito(), prefix, 0);
-		
-//		imprimirArbolRecursivo(arbolPrefijo);
-		
-		//Obtenemos la frecuencia maxima de las consultas almacenadas en arbolPrefijo
-		//int frecuenciaMax = obtenerFrecuenciaMaxima(arbolPrefijo);
-		
-		//Obtenemos un arbol ordenado de mayor a menor frecuencia
-		//GTreeIF<Query> arbolOrdenado = obtenerArbolMismaFrecuencia(arbolPrefijo, frecuencia, "", prefix);
-		
 		//Obtenemos el arbol ordenado lexicograficamente y por frecuencias
 		GTreeIF<Query> arbolLexicografico = obtenerArbolLexicografico(arbolPrefijo, prefix);
 		
@@ -190,7 +158,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @param arbolPrefijo Arbol cuyas consultas empiezan por un prefijo
 	 * @return raiz Arbol lexicografico por frecuencias
 	 */
-	public GTreeIF<Query> obtenerArbolLexicografico(GTreeIF<Query> arbolPrefijo, String prefijo){
+	private GTreeIF<Query> obtenerArbolLexicografico(GTreeIF<Query> arbolPrefijo, String prefijo){
 		GTreeIF<Query> raiz = new GTree<Query>();
 		raiz.setRoot(new Query(""));
 		
@@ -199,14 +167,12 @@ public class QueryDepotTree implements QueryDepotIF {
 		IteratorIF<Integer> itr = listaFrecuencias.iterator();
 		while(itr.hasNext()) { //Iteramos todas las frecuencias de mayor a menor
 			int frecuencia = itr.getNext();
-//			System.out.println("frecuencia " + frecuencia);
 			
 			//Obtenemos un arbol cuyas consultas tienen todas la misma frecuencia
 			GTreeIF<Query> arbolFrecuencia = obtenerArbolMismaFrecuencia(arbolPrefijo, frecuencia, prefijo, "");
 			
 			//Ordenamos arbolFrecuencia lexicograficamente
 			GTreeIF<Query> arbolLexicografico = ordenarArbolLexicograficamente(arbolFrecuencia);
-			
 			
 			//Añadimos cada consulta en arbolLexicografico a raiz
 			raiz.addChild(posAux+1, arbolLexicografico);
@@ -221,7 +187,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @param añadido Arbol con las consultas a añadir
 	 * @return raiz Arbol añadiendo con las consultas de añadido añadidas.
 	 */
-	public GTreeIF<Query> incluirConsultasArbol(GTreeIF<Query> añadiendo, GTreeIF<Query> añadido, 
+	private GTreeIF<Query> incluirConsultasArbol(GTreeIF<Query> añadiendo, GTreeIF<Query> añadido, 
 			String prefijo, String consulta){
 		
 		ListIF<Query> l = obtenerListaConsultas(añadido, 0, "", "");
@@ -243,7 +209,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @param arbolFrecuencias Arbol de consultas
 	 * @return l
 	 */
-	public ListIF<Integer> obtenerListaFrecuencias(GTreeIF<Query> arbolFrecuencias){
+	private ListIF<Integer> obtenerListaFrecuencias(GTreeIF<Query> arbolFrecuencias){
 		ListIF<Integer> l = new List<Integer>();
 		
 		//Obtenemos todas las frecuencias diferentes en arbolFrecuencias
@@ -269,18 +235,18 @@ public class QueryDepotTree implements QueryDepotIF {
 		
 		//Ordenamos la lista obtenida de mayor a menor
 		//mediante el logaritmo burbuja
-		for(int i = 0; i < l.size(); i++) {
-			for(int j = 0; j < l.size(); j++) {
-				int freq1 = l.get(i);
-				int freq2 = l.get(i+1);
+		for(int i = 2; i <=  l.size(); i++) {
+			for(int j = 0; j <= l.size()-1; j++) {
+				int freq1 = l.get(j);
+				int freq2 = l.get(j+1);
 				
 				//Guardamos freq2 y sustituimos freq1 en freq2
 				//posteriormente sustituimos aux(freq2) en la vieja
 				//posicion de freq1
 				if(freq2 > freq1) {
 					int aux = freq2;
-					l.set(i+1, freq1);
-					l.set(i, aux);
+					l.set(j+1, freq1);
+					l.set(j, aux);
 				}
 			}
 		}
@@ -294,7 +260,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @param arbolPorFrecuencia Arbol ordenado por frecuencia
 	 * @return raiz Arbol ordenado por frecuencia y lexicográficamente
 	 */
-	public GTreeIF<Query> ordenarArbolLexicograficamente(GTreeIF<Query> arbolPorFrecuencia){
+	private GTreeIF<Query> ordenarArbolLexicograficamente(GTreeIF<Query> arbolPorFrecuencia){
 		GTreeIF<Query> aux = new GTree<Query>();
 		aux.setRoot(arbolPorFrecuencia.getRoot());
 		
@@ -315,7 +281,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @param nodo Nodo padre de la lista de hijos
 	 * @return l Lista de nodos ordenados lexicograficamente
 	 */
-	public ListIF<GTreeIF<Query>> ordenarLexicograficamente(GTreeIF<Query> nodo){
+	private ListIF<GTreeIF<Query>> ordenarLexicograficamente(GTreeIF<Query> nodo){
 		ListIF<GTreeIF<Query>> l = nodo.getChildren();
 		
 		//O(U*U) donde U es el numero de nodos
@@ -365,7 +331,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @param frecuencia Frecuencia que tiene que tener la consulta para ser añadida
 	 * @return raiz Arbol con consultas de una misma frecuencia
 	 */
-	public GTreeIF<Query> obtenerArbolMismaFrecuencia(GTreeIF<Query> nodo, int frecuencia, 
+	private GTreeIF<Query> obtenerArbolMismaFrecuencia(GTreeIF<Query> nodo, int frecuencia, 
 			String prefijo, String consulta){
 		GTreeIF<Query> aux = new GTree<Query>();
 		aux.setRoot(new Query(""));
@@ -392,7 +358,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @param i variable recursiva
 	 * @return temp Nodo con consultas que empiezan por prefix
 	 */
-	public GTreeIF<Query> obtenerArbolPrefijo(GTreeIF<Query> nodo, String prefix, int i){
+	private GTreeIF<Query> obtenerArbolPrefijo(GTreeIF<Query> nodo, String prefix, int i){
 		
 		//Si i es menor que el numero de letras de prefix
 		if(i<prefix.length()) {
@@ -531,11 +497,6 @@ public class QueryDepotTree implements QueryDepotIF {
 		return cadena.substring(0, cadena.length()-n);
 	}
 	
-	
-	 
-
-
-	
 	/**
 	 * NOTA: investigar si las palabras con misma parte compartida
 	 * pero letras extras tienen mayor prioridad o menor que las que
@@ -547,10 +508,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * Metodo usado para comparar dos palabras lexicograficamente
 	 * @return 1 si a < b , 0 si a = b, -1 si a > b
 	 */
-	
-	
-	
-	 public int compararLexicograficamente(String a, String b) {
+	private int compararLexicograficamente(String a, String b) {
 		int tamañoPalabra = 0;
 		
 		//Calculamos el tamaño de la palabra de menor tamaño
@@ -611,7 +569,7 @@ public class QueryDepotTree implements QueryDepotIF {
 	 * @param q Texto de la consulta
 	 * @param i Contador. 0 <= i < q.length()
 	 */
-	public void añadirConsulta(GTreeIF<Query> nodo, int frecuencia, String q, int i) {
+	private void añadirConsulta(GTreeIF<Query> nodo, int frecuencia, String q, int i) {
 		
 		//Si i es menor que el tamaño de la consulta a introducir en el deposito
 		if(i<q.length()) {
