@@ -50,12 +50,12 @@ public class TestQueryDepotTree {
 	public void testAddObtenerArbolPrefijo() throws IOException {
 		QueryDepotTree qdt = new QueryDepotTree("src/Debugging_Consultas.txt");
 		ListIF<Query> l = qdt.listOfQueries("auto");
-//		IteratorIF<Query> itr = l.iterator();
-//		System.out.println("Imprimir lista (" + l.size() + ")");
-//		while(itr.hasNext()) {
-//			Query temp = itr.getNext();
-//			System.out.println( temp.getText() + "(" + temp.getFreq() + ")");
-//		}
+		IteratorIF<Query> itr = l.iterator();
+		System.out.println("Imprimir lista (" + l.size() + ")");
+		while(itr.hasNext()) {
+			Query temp = itr.getNext();
+			System.out.println( temp.getText() + "(" + temp.getFreq() + ")");
+		}
 	}
 	
 	@Test

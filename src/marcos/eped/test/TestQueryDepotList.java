@@ -51,11 +51,11 @@ public class TestQueryDepotList {
 		QueryDepotList qdl = new QueryDepotList("src/Debugging_Consultas.txt");
 		
 		ListIF<Query> l = qdl.listOfQueries("auto");
-//		IteratorIF<Query> itr = l.iterator();
-//		while(itr.hasNext()) {
-//			Query temp = itr.getNext();
-//			System.out.println( "(" + temp.getFreq() + ") " + temp.getText());
-//		}
+		IteratorIF<Query> itr = l.iterator();
+		while(itr.hasNext()) {
+			Query temp = itr.getNext();
+			System.out.println( "(" + temp.getFreq() + ") " + temp.getText());
+		}
 	}
 	
 	/*@Test

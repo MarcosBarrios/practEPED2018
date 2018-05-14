@@ -328,8 +328,18 @@ public class QueryDepotTree implements QueryDepotIF {
 				//Si comparacion==-1 entonces temp2 va antes de temp1 lexicograficamente
 				//Si comparacion==0 entonces temp2 y temp1 son iguales lexicograficamente
 				//Si comparacion==1 entonces temp2 va despues de temp1 lexicograficamente
+				//Ademas los nodos cuyo caracter sea igual a "" seran considerados nodos
+				//hoja o nodos de frecuencia. Los nodos de frecuencia siempre seran los
+				//primeros nodos en ser iterados (mas a la izquierda)
 				//O(K) (K = nº caracteres consulta con menos caracteres)
-				int comparacion = compararLexicograficamente(temp1.getRoot().getText(), temp2.getRoot().getText());
+				int comparacion = 0;
+				if(temp1.getRoot().getText().equals("")) {
+					comparacion = 1;
+				}else if(temp2.getRoot().getText().equals("")){
+					comparacion = -1;
+				}else {
+					comparacion = compararLexicograficamente(temp1.getRoot().getText(), temp2.getRoot().getText());
+				}
 				
 				//Si temp2 es menor que temp1 lexicograficamente
 				//O si temp2 es igual que temp1 pero la consulta es mas pequeña
@@ -403,10 +413,6 @@ public class QueryDepotTree implements QueryDepotIF {
 						return temp;
 					}
 					return obtenerArbolPrefijo(temp, prefix, i+1);
-				}else { //Si no hay ninguna letra que coincida con la letra del nodo
-					GTreeIF<Query> nodoVacio = new GTree<Query>();
-					nodoVacio.setRoot(new Query(""));
-					return nodoVacio;
 				}
 			}
 		}
