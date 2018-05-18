@@ -1,8 +1,11 @@
 package es.uned.lsi.eped.pract2017_2018;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import es.uned.lsi.eped.DataStructures.IteratorIF;
 import es.uned.lsi.eped.DataStructures.List;
@@ -27,16 +30,18 @@ public class QueryDepotList implements QueryDepotIF {
 	 * @param pathFile Ubicacion del registro de consultas
 	 * @throws IOException En caso de problema
 	 */
-	public QueryDepotList(String pathFile) throws IOException{
+	public QueryDepotList(String pathFile) {
 		deposito = new List<Query>();
-		FileReader registroConsultas;
-		registroConsultas = new FileReader(pathFile);
-		BufferedReader lector = new BufferedReader(registroConsultas);
-    	String consulta;
-    	while((consulta = lector.readLine())!=null) {
-    		incFreqQuery(consulta);
-    	}
-    	lector.close();
+		Path direccion = Paths.get(pathFile);
+		try(BufferedReader lector = Files.newBufferedReader(direccion, StandardCharsets.UTF_8);) {
+			
+	    	String consulta;
+	    	while((consulta = lector.readLine())!=null) {
+	    		incFreqQuery(consulta);
+	    	}
+		}catch(IOException e) {
+			System.err.println("No se pudo obtener las consultas. ");
+		}
 	}
 	
 	/**

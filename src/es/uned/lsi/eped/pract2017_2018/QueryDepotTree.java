@@ -1,8 +1,11 @@
 package es.uned.lsi.eped.pract2017_2018;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import es.uned.lsi.eped.DataStructures.GTree;
 import es.uned.lsi.eped.DataStructures.GTreeIF;
@@ -27,14 +30,15 @@ public class QueryDepotTree implements QueryDepotIF {
 	public QueryDepotTree(String pathFile) throws IOException{
 		//Lee las consultas de un archivo y las mete en el deposito
 		primerNodo = new GTree<Query>();
-		FileReader registroConsultas;
-		registroConsultas = new FileReader(pathFile);
-		BufferedReader lector = new BufferedReader(registroConsultas);
-        String consulta;
-        while((consulta = lector.readLine())!=null) {
-        	incFreqQuery(consulta);
-        }
-        lector.close();
+		Path direccion = Paths.get(pathFile);
+		try(BufferedReader lector = Files.newBufferedReader(direccion, StandardCharsets.UTF_8);) {
+	    	String consulta;
+	    	while((consulta = lector.readLine())!=null) {
+	    		incFreqQuery(consulta);
+	    	}
+		}catch(IOException e) {
+			System.err.println("No se pudo obtener las consultas. ");
+		}
 	}
 	
 	/**
@@ -111,7 +115,7 @@ public class QueryDepotTree implements QueryDepotIF {
 					if((i+1)==q.length()) { 
 						//Obtiene el nodo hoja asociado y devuelve su frecuencia
 						GTreeIF<Query> nodoFrecuencia = obtenerNodoHoja(temp);
-						return nodoFrecuencia.getRoot().getFreq();
+						if(nodoFrecuencia!=null)return nodoFrecuencia.getRoot().getFreq();
 					}
 				}
 			}
@@ -143,6 +147,7 @@ public class QueryDepotTree implements QueryDepotIF {
 		
 		//Obtenemos el arbol con las consultas que empiezan por el prefijo
 		GTreeIF<Query> arbolPrefijo = obtenerArbolPrefijo(obtenerDeposito(), prefix, 0);
+		
 		//Obtenemos el arbol ordenado lexicograficamente y por frecuencias
 		GTreeIF<Query> arbolLexicografico = obtenerArbolLexicografico(arbolPrefijo, prefix);
 		
@@ -181,7 +186,7 @@ public class QueryDepotTree implements QueryDepotIF {
 		return raiz;
 	}
 	
-//	
+	
 	
 	/**
 	 * Devuelve la lista de frecuencias ordenadas de mayor a menor.
