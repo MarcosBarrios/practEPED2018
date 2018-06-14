@@ -22,7 +22,7 @@ public interface QueryDepotIF {
 	/* @param el prefijo */
 	public ListIF<Query> listOfQueries (String prefix);
 	/* Incrementa en uno la frecuencia de una consulta en el depósito */
-	/* Si la consulta no existía en la estructura, la deberá añadir */
+	/* Si la consulta no existía en la estructura, la deberá anadir */
 	/* @param el texto de la consulta */
 	public void incFreqQuery (String q);
 }

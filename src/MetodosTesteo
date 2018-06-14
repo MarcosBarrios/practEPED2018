@@ -24,7 +24,7 @@ public void imprimirArbolRecursivo(GTreeIF<Query> nodo) {
 /*public void imprimirLista(ListIF<Query> lista) {
 	System.out.println();
 	System.out.println("\t||||||||imprimirLista(ListIF<Query> lista) method called: ");
-	System.out.println("\tTamaño de la lista: " + lista.size());
+	System.out.println("\tTamano de la lista: " + lista.size());
 	IteratorIF<Query> itr = lista.iterator();
 	while(itr.hasNext()) {
 		Query temp = itr.getNext();
@@ -174,23 +174,23 @@ private void imprimirArbolRecursivo(GTreeIF<Query> nodo) {
 //	}
 
 /**
-//	 * Añade las consultas de un arbol a otro arbol.
-//	 * @param añadiendo Arbol al que se le añaden las consultas
-//	 * @param añadido Arbol con las consultas a añadir
-//	 * @return raiz Arbol añadiendo con las consultas de añadido añadidas.
+//	 * Anade las consultas de un arbol a otro arbol.
+//	 * @param anadiendo Arbol al que se le anaden las consultas
+//	 * @param anadido Arbol con las consultas a anadir
+//	 * @return raiz Arbol anadiendo con las consultas de anadido anadidas.
 //	 */
-//	private GTreeIF<Query> incluirConsultasArbol(GTreeIF<Query> añadiendo, GTreeIF<Query> añadido, 
+//	private GTreeIF<Query> incluirConsultasArbol(GTreeIF<Query> anadiendo, GTreeIF<Query> anadido, 
 //			String prefijo, String consulta){
 //		
-//		ListIF<Query> l = obtenerListaConsultas(añadido, 0, "", "");
+//		ListIF<Query> l = obtenerListaConsultas(anadido, 0, "", "");
 //		IteratorIF<Query> itr = l.iterator();
 //		while(itr.hasNext()) {
 //			Query temp = itr.getNext();
 //			
 //			//Quitamos el prefijo del principio de la consulta para no repetirlo
 //			String nombreConsulta = temp.getText().substring(prefijo.length(), temp.getText().length());
-//			añadirConsulta(añadiendo, temp.getFreq(), nombreConsulta, 0);
+//			anadirConsulta(anadiendo, temp.getFreq(), nombreConsulta, 0);
 //		}
 //		
-//		return añadiendo;
+//		return anadiendo;
 //	}

@@ -26,5 +26,32 @@ public class Query {
 	public String getText() {
 		return texto;
 	}
+	
+	/**
+	 * @return Devuelve el texto de la consulta
+	 */
+	@Override
+	public String toString() {
+		return getText();
+	}
+	
+	/**
+	 * Dos consultas seran iguales si su texto y su
+	 * frecuencia son iguales.
+	 * 
+	 * @param o Objeto con el que comparar esta consulta
+	 * 
+	 * @return Verdadero si el texto y la frecuencia
+	 * de "o" es igual al de esta consulta
+	 */
+	@Override
+	public boolean equals(Object o) {
+		Query q = (Query) o;
+		if(q.getText().equals(getText()) &&
+				q.getFreq()==getFreq()){
+			return true;
+		}
+		return false;
+	}
 
 }
