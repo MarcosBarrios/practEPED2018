@@ -27,19 +27,21 @@ public class QueryDepotList implements QueryDepotIF {
 	
 	/**
 	 * Crear un deposito de consultas a partir de un registro de consultas
+	 * 
 	 * @param pathFile Ubicacion del registro de consultas
 	 * @throws IOException En caso de problema
 	 */
 	public QueryDepotList(String pathFile) {
 		deposito = new List<Query>();
 		Path direccion = Paths.get(pathFile);
-		try(BufferedReader lector = Files.newBufferedReader(direccion, StandardCharsets.UTF_8);) {
+		try(BufferedReader lector = Files.newBufferedReader(direccion, 
+				StandardCharsets.UTF_8);) {
 			
 	    	String consulta;
 	    	while((consulta = lector.readLine())!=null) {
 	    		incFreqQuery(consulta);
 	    	}
-		}catch(IOException e) {
+		}catch(Exception e) {
 			System.err.println("No se pudo obtener las consultas. ");
 		}
 	}
@@ -72,8 +74,11 @@ public class QueryDepotList implements QueryDepotIF {
 
 	/**
 	 * Devuelve la frecuencia de una consulta
-	 * @param q - Texto de la consulta
-	 * @return frecuencia - La frecuencia de la consulta
+	 * 
+	 * @param q Texto de la consulta
+	 * 
+	 * @return frecuencia La frecuencia de la consulta
+	 * 
 	 */
 	public int getFreqQuery(String q) {
 		int frecuencia = 0;
@@ -90,64 +95,196 @@ public class QueryDepotList implements QueryDepotIF {
 	}
 
 	/**
-	 * Devuelve una lista con las consultas del deposito
-	 * ordenadas de mayor a menor en orden lexicografico
-	 * @param prefix - El prefijo de la consulta
+	 * Devuelve una lista con las consultas del deposito ordenadas 
+	 * de mayor a menor en orden lexicografico y por frecuencia
+	 * 
+	 * Algoritmo:
+	 * 
+	 * 		1. Obtener lista con las consultas que empiezan con el prefijo
+	 * 		2. Obtener lista consultas ordenadas segun frecuencia descendente
+	 * 		3. Ordenar lexicograficmente la lista del paso 2
+	 * 
+	 * @param prefix El prefijo de la consulta
 	 */
 	public ListIF<Query> listOfQueries(String prefix) {
-		ListIF<Query> listaLexicografica = new List<Query>();
 		
-		/*
-		 * Algoritmo:
-		 * 
-		 * 		1. Obtener lista con las palabras que empiezan con el prefijo
-		 * 		2. Obtener la frecuencia maxima
-		 * 		3. Crear una lista ordenada de mayor a menor frecuencia
-		 * 		4. Ordenar lexicográficmente la lista
-		 * 
-		 */
+		//Obtenemos la lista con las consultas que empiezan con el prefijo
+		ListIF<Query> lConsultas = listaPrefijo(obtenerDeposito(), prefix);
 		
-		//Obtenemos la lista con las palabras que empiezan con el prefijo
-		ListIF<Query> listaPrefijo = obtenerListaPrefijo(prefix);
-		
-		//Obtenemos la frecuencia maxima
-		int frecuenciaMax = obtenerMaxFrecuencia(listaPrefijo);
-		
-		//Crear una lista ordenada de mayor a menor frecuencia
-		ListIF<Query> listaOrdenada = obtenerListaOrdenada(listaPrefijo, frecuenciaMax);
-		
-		//imprimirLista(listaOrdenada);
-		
-		//Ordenar lexicograficamente la lista
-		listaLexicografica = obtenerListaLexicografica(listaOrdenada, frecuenciaMax);
-		
-		//imprimirLista(listaLexicografica);
-		
-		return listaLexicografica;
+		//Obtener lista con las frecuencias ordenadas descendentemente
+		ListIF<Query> lOrdenada = listaFrecuenciasOrdenadas(lConsultas);
+				
+		//Ordenar lexicograficamente la lista con las frecuencias ordenadas
+		ListIF<Query> lLexicografica = listaLexicografica(lOrdenada);
+				
+		return lLexicografica;
 	}
 	
 	/**
-	 * Añade todas las frecuencias de una lista contenedora de consultas
-	 * a una lista contenedora de frecuencias.
+	 * Devuelve una lista de consultas que empiecen por un  prefijo 
+	 * especificado.
 	 * 
-	 * @param listaConsultas - Lista de consultas
-	 * @return listaFrecuencias - Todas las distintas frecuencias de listaConsultas
+	 * Si el prefijo es igual a "" entonces el metodo devuelve la
+	 * lista lConsultas entera.
+	 * 
+	 * Se comparan los caracteres de cada consulta de lConsultas tal que
+	 * si coinciden los (prefijo.length()) primeros caracteres se anade
+	 * la consulta a la lista que devuelve el metodo.
+	 * 
+	 * @param lConsultas Lista con las consultas a comprobar
+	 * @param prefijo Prefijo que tienen que tener las consultas
+	 * 
+	 * @return aux Lista con las palabras que tienen el prefijo
 	 */
-	private ListIF<Integer> obtenerFrecuencias(ListIF<Query> listaConsultas){
-		ListIF<Integer> listaFrecuencias = new List<Integer>();
+	private ListIF<Query> listaPrefijo(ListIF<Query> lConsultas, String prefijo){
 		
-		IteratorIF<Query> itr = listaConsultas.iterator();
-		while(itr.hasNext()) {
-			Query temp = itr.getNext();
-			if(!listaFrecuencias.contains(temp.getFreq())) {
-				listaFrecuencias.insert(temp.getFreq(), listaFrecuencias.size()+1);
+		if(prefijo.length()>0) {
+			ListIF<Query> aux = new List<Query>();
+			IteratorIF<Query> itr = lConsultas.iterator();
+			while(itr.hasNext()) { //Por cada consulta en lConsultas
+				Query temp = itr.getNext();
+				
+				if(coincidePrefijo(prefijo, temp.getText())) {
+					//Si la consulta tiene el prefijo "prefijo"
+					aux.insert(temp, aux.size()+1);
+				}
+			}
+			return aux;
+		}
+		
+		return lConsultas;
+	}
+	
+	/**
+	 * Devuelve verdadero si la cadena "comparando" tiene el prefijo
+	 * especificado.
+	 * 
+	 * @param prefijo Prefijo que tiene uqe tener la cadena comparando
+	 * @param comparando Cadena sobre la que se comprueba el prefijo
+	 * 
+	 * @return Verdadero si el prefijo de comparando coincide con el del
+	 * parametro especificado
+	 */
+	private boolean coincidePrefijo(String prefijo, String comparando) {
+		int numeroAciertos = 0;
+		
+		if(comparando.length() >= prefijo.length()) {
+			//Si "comparando" es al menos tan largo como prefijo
+			
+			for(int i = 0; i < prefijo.length(); i++) {
+				if(comparando.charAt(i) == prefijo.charAt(i)) {
+					//Incrementamos en 1 por cada caracter igual
+					numeroAciertos++;
+				}
+			}
+			
+			if(numeroAciertos == prefijo.length()) {
+				return true; //"comparando" tiene el prefijo especificado
 			}
 		}
 		
-		return listaFrecuencias;
+		return false;
 	}
 	
 	/**
+	 * O(N*N)
+	 * Obtiene una lista ordenada segun las frecuencias de sus consultas
+	 * de mayor a menor.
+	 * 
+	 * @param listaPrefijo Lista con consultas que empiezan por un prefijo
+	 * 
+	 * @return lConsultasOrdenadas Lista con consultas ordenadas de mayor 
+	 * a menor frecuencia
+	 */
+	private ListIF<Query> listaFrecuenciasOrdenadas(ListIF<Query> listaPrefijo){
+		ListIF<Query> lConsultasOrdenadas = new List<Query>();
+		
+		//O(N*N) Obtenemos todas las frecuencias diferentes en listaPrefijo
+		ListIF<Integer> lFrecuencias = listaFrecuencias(listaPrefijo);
+		IteratorIF<Integer> itr = lFrecuencias.iterator();
+		while(itr.hasNext()) {
+			int temp = itr.getNext(); //Frecuencia actual
+			
+			//O(N) Insertamos las consultas de frecuencia "temp" en lConsultasOrdenadas
+			insertarConsultasMismaFrecuencia(listaPrefijo, lConsultasOrdenadas, temp);
+		}
+		
+		return lConsultasOrdenadas;
+	}
+	
+	/**
+	 * O(N)
+	 * Devuelve una lista con todas las frecuencias de las consultas almacenadas
+	 * ordenadas descendentemente (mayor primera, menor ultima)
+	 * 
+	 * @param listaConsultas Lista de consultas con las diferentes frecuencias
+	 * 
+	 * @return lFrecuencias Lista con todas las diferentes frecuencias ordenadas
+	 * descendentemente
+	 */
+	private ListIF<Integer> listaFrecuencias(ListIF<Query> listaConsultas){
+		 ListIF<Integer> lFrecuencias = new List<Integer>();
+		
+		 //Anadimos a lFrecuencias las diferentes frecuencias encontradas
+		 IteratorIF<Query> itr = listaConsultas.iterator();
+		 while(itr.hasNext()) {
+			 Query temp = itr.getNext();
+			 if(!lFrecuencias.contains(temp.getFreq())) {
+				 lFrecuencias.insert(temp.getFreq(), lFrecuencias.size()+1);
+			 }
+		 }
+		
+		 ordenarListaDescendentemente(lFrecuencias);
+		
+		 return lFrecuencias;
+	}
+	
+	/**
+	 * O(N)
+	 * Comprueba las consultas de la lista "lConsultas" tal que inserta
+	 * las que tienen una frecuencia especifica en otra lista "lInsertando"
+	 * 
+	 * @param lConsultas Lista con las consultas a comprobar
+	 * @param lInsertando Lista en las que insertar las consultas
+	 * @param frecuencia Frecuencia que las consultas de "lConsultas" tienen que
+	 * tener para ser insertadas en "lInsertando"
+	 */
+	private void insertarConsultasMismaFrecuencia(ListIF<Query> lConsultas, 
+			ListIF<Query> lInsertando, int frecuencia) {
+		
+		IteratorIF<Query> itr = lConsultas.iterator();
+		while(itr.hasNext()) { //Por cada consulta
+			Query temp = itr.getNext();
+			if(temp.getFreq()==frecuencia) {
+				lInsertando.insert(temp, lInsertando.size()+1);
+			}
+		}
+	}
+	
+	/**
+	 * O(N*N)
+	 * Ordena descendentemente (Mayor a menor) una lista de enteros
+	 * mediante el algoritmo de ordenamiento burbuja.
+	 * 
+	 * @param l Lista a ordenar descendentemente
+	 */
+	private void ordenarListaDescendentemente(ListIF<Integer> l){
+		for(int i = 1; i <= l.size(); i++) {
+			for(int j = 0; j <= l.size()-i; j++) {
+				int e1 = l.get(j);
+				int e2 = l.get(j+1);
+				
+				if(e1 < e2) {
+					int aux = e1;
+					l.set(j, e2);
+					l.set(j+1, aux);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * O(N*N*N)
 	 * Ordena lexicograficamente una lista.
 	 * 
 	 * PRECONDICION: listaOrdenada tiene que estar ordenada de mayor a menor frecuencia
@@ -155,86 +292,57 @@ public class QueryDepotList implements QueryDepotIF {
 	 * @param frecuenciaMax - Frecuencia maxima de las consultas en listaOrdenada
 	 * @return listaLexicografica - Lista ordenada lexicograficamente y de mayor a menor frecuencia
 	 */
-	private ListIF<Query> obtenerListaLexicografica(ListIF<Query> listaOrdenada, int frecuenciaMax) {
-		ListIF<Integer> listaFrecuencias = obtenerFrecuencias(listaOrdenada);
+	private ListIF<Query> listaLexicografica(ListIF<Query> listaOrdenada) {
+		ListIF<Query> lLexicografica = new List<Query>();
 		
-		//O(N*N*N*K)
-		IteratorIF<Integer> itr = listaFrecuencias.iterator();
-		while(itr.hasNext()) { //Para cada frecuencia
+		//O(N*N*N)
+		ListIF<Integer> lFrecuencias = listaFrecuencias(listaOrdenada);
+		IteratorIF<Integer> itr = lFrecuencias.iterator();
+		while(itr.hasNext()) { //Para cada frecuencia en lFrecuencias
 			int frecuencia = itr.getNext();
 			
-			//O(N)
-			//Obtenemos la lista de consultas con frecuencia i
-			ListIF<Query> listaMismaFrecuencia = obtenerMismaFrecuencia(listaOrdenada, frecuencia);
+			//O(N) Obtenemos la lista de consultas con frecuencia "frecuencia"
+			ListIF<Query> consultasMismaFrecuencia = 
+					listaConsultasMismaFrecuencia(listaOrdenada, frecuencia);
 			
-			//O(N*N*K) (K = nº minimo de caracteres entre dos consultas)
-			//Obtenemos la lista ordenada lexicograficamente con la frecuencia especifica
-			listaMismaFrecuencia = ordenarLexicograficamente(listaMismaFrecuencia);
-			
-			//Obtenemos la primera posicion de listaMismaFrecuencia con respecto a 
-			//listaOrdenada para poder sustituir la listaMismaFrecuencia en la posicion 
-			//correcta de listaOrdenada tras haber ordenado las consultas de 
-			//listaMismaFrecuencia lexicograficamente
+			//O(N*N)
+			//Ordenamos lexicograficamente la lista con frecuencia "frecuencia"
+			ordenarLexicograficamente(consultasMismaFrecuencia);
 			
 			//O(N)
-			int primeraPos = 0;
-			int aux = 1;
-			boolean encontrado = false;
-			IteratorIF<Query> itr2 = listaOrdenada.iterator();
-			while(!encontrado && itr2.hasNext()) {
-				//aux++; //Queremos una posicion directa (desde la posicion 1, no desde 0)
-				Query temp = itr2.getNext();
-				if(temp.getFreq()==frecuencia) {
-					primeraPos = aux;
-					encontrado = true;
-				}
-				aux++;
+			//Insertamos las consultas de frecuencia "frecuencia" ya ordenadas
+			//lexicograficamente en la lista de salida lLexicografica
+			for(int z = 0; z < consultasMismaFrecuencia.size(); z++) {
+				lLexicografica.insert(consultasMismaFrecuencia.get(z+1), 
+						lLexicografica.size()+1);
 			}
-			
-			//O(N)
-			//Sustituimos la lista ordenada lexicograficamente por la que no lo esta
-			//con la misma frecuencia
-			for(int z = 0; z < listaMismaFrecuencia.size(); z++) {
-				Query temp = listaMismaFrecuencia.get(z+1);
-				listaOrdenada.set(primeraPos+z, temp);
-			}
-			
 		}
 		
-		return listaOrdenada;
+		return lLexicografica;
 	}
 	
-	//Ordena una lista ordenada por frecuencias a una lista ordenada 
-	//por frecuencias y lexicograficamente
-	private ListIF<Query> ordenarLexicograficamente(ListIF<Query> listaMismaFrecuencia) {
-		ListIF<Query> lista = listaMismaFrecuencia;
-		
-		//O(N*N*K)
-		for(int j = 0; j < lista.size(); j++) {
-			for(int i = 0; i < lista.size(); i++) {
-				Query temp1 = lista.get(i);
-				Query temp2 = lista.get(i+1);
+	/**
+	 * O(N*N)
+	 * Ordena una lista lexicograficamente mediante el logaritmo de
+	 * ordenamiento burbuja.
+	 * 
+	 * @param listaMismaFrecuencia Lista de consultas a ordenar lexicograficamente
+	 */
+	private void ordenarLexicograficamente(ListIF<Query> l) {
+		for(int j = 0; j < l.size(); j++) {
+			for(int i = 1; i < l.size()-j; i++) {
+				Query temp1 = l.get(i);
+				Query temp2 = l.get(i+1);
 				
-				//Compara la lexicografia de temp2 con respecto a temp1
-				//Si comparacion==-1 entonces temp2 va antes de temp1 lexicograficamente
-				//Si comparacion==0 entonces temp2 y temp1 son iguales lexicograficamente
-				//Si comparacion==1 entonces temp2 va despues de temp1 lexicograficamente
-				//O(K) (K = nº caracteres consulta con menos caracteres)
-				int comparacion = compararLexicograficamente(temp2.getText(), temp1.getText());
-				int masPequeño = temp2.getText().length()-temp1.getText().length();			
-				
-				//Si temp2 es menor que temp1 lexicograficamente
-				//O si temp2 es igual que temp1 pero la consulta es mas pequeña
-				if(comparacion==1 || (comparacion==0 && masPequeño<0) ) {
-					Query aux = new Query(temp2.getText());
-					aux.setFreq(temp2.getFreq());
-					lista.set(i+1, temp1);
-					lista.set(i, aux);
+				if(temp1.getText().compareTo(temp2.getText())>0) {
+					//Si temp1 es mayor que temp2 lexicograficamente
+					Query aux = temp1;
+					l.set(i, temp2);
+					l.set(i+1, aux);
 				}
 			}
 		}
 		
-		return lista;
 	}
 	
 	/**
@@ -243,11 +351,11 @@ public class QueryDepotList implements QueryDepotIF {
 	 * @param frequency - Frecuencia de las consultas
 	 * @return listaMismaFrecuencia - Lista con consultas de la frecuencia especificada
 	 */
-	 private ListIF<Query> obtenerMismaFrecuencia(ListIF<Query> listaOrdenada, int frequency) {
+	 private ListIF<Query> listaConsultasMismaFrecuencia(ListIF<Query> listaOrdenada, int frequency) {
 		ListIF<Query> listaMismaFrecuencia = new List<Query>();
 		
 		IteratorIF<Query> itr = listaOrdenada.iterator();
-		while(itr.hasNext()) {
+		while(itr.hasNext()) { //Por cada consulta
 			Query temp = itr.getNext();
 			if(temp.getFreq()==frequency) {
 				listaMismaFrecuencia.insert(temp, listaMismaFrecuencia.size()+1);
@@ -256,181 +364,71 @@ public class QueryDepotList implements QueryDepotIF {
 		
 		return listaMismaFrecuencia;
 	}
-	
-	/**
-	 * Obtiene una lista ordenada segun las frecuencias de sus consultas
-	 * de mayor a menor.
-	 * 
-	 * @param listaPrefijo - Lista con consultas que empiezan por un prefijo
-	 * @param frecuenciaMax - Frecuencia maxima de las consultas de la listaPrefijo
-	 * @return listaOrdenada - Lista con consultas ordenadas de mayor a menor frecuencia
-	 */
-	 private ListIF<Query> obtenerListaOrdenada(ListIF<Query> listaPrefijo, int frecuenciaMax){
-		ListIF<Query> listaOrdenada = new List<Query>();
-		
-		for(int i = frecuenciaMax; i > 0; i--) { //Para cada frecuencia	
-			
-			IteratorIF<Query> itr = listaPrefijo.iterator();
-			while(itr.hasNext()) { //Para cada palabra en listaPrefijo
-				Query temp = itr.getNext();
-				if(temp.getFreq()==i) {
-					listaOrdenada.insert(temp, listaOrdenada.size()+1);
-				}
-			}
-		
-		}
-		
-		return listaOrdenada;
-	}
-	
-	/**
-	 * Devuelve la frecuencia maxima de un deposito de consultas
-	 * 
-	 * @param listaPrefijo - Lista con palabras que empiezan por un prefijo especificado
-	 * @return frecuenciaMax - Maxima frecuencia de una consulta de la listaPrefijo
-	 */
-	 private int obtenerMaxFrecuencia(ListIF<Query> listaPrefijo) {
-		 IteratorIF<Query> itr = listaPrefijo.iterator();
-		 int frecuenciaMax = 0;
-		 while(itr.hasNext()) {
-			 Query temp = itr.getNext();
-			
-			 if(temp.getFreq() > frecuenciaMax) {
-				 frecuenciaMax = temp.getFreq();
-			 }
-		 }
-		
-		 return frecuenciaMax;
-	 }
-	
-	/**
-	 * Obtencion de una lista de palabras que tengan el prefijo
-	 * pasado en el parametro.
-	 * 
-	 * @param prefijo - Prefijo para comparar las consultas
-	 * @return aux - Lista con las palabras que tienen el prefijo
-	 */
-	 private ListIF<Query> obtenerListaPrefijo(String prefijo){
-		 
-		 ListIF<Query> aux = new List<Query>();
-		 IteratorIF<Query> itr = obtenerDeposito().iterator();
-		
-		 if(prefijo.length()>=0) {
-			 
-			 while(itr.hasNext()) { //Por cada palabra en el deposito
-				 
-				 Query temp = itr.getNext();
-				 int tamañoPalabra = temp.getText().length();
-				 int aciertos = 0;
-				
-				 //Si el tamaño de la palabra del deposito es mayor o igual que el prefijo
-				 if(tamañoPalabra >= prefijo.length()) {
-					 
-					 //Comprobamos que los caracteres de la consulta coinciden
-					 //con los caracteres del prefijo (los (prefijo.length()) primeros
-					 //caracteres nada mas)
-					 for(int i = 0; i < prefijo.length(); i++) {
-						 String textoQuery = temp.getText().toLowerCase();
-						
-						 if(textoQuery.charAt(i) == prefijo.charAt(i)) {
-							 aciertos++; //sumamos 1 por cada acierto de caracter
-						 }
-					 }
-				 }
-				
-				 if(aciertos == prefijo.length()) {
-					 aux.insert(temp, aux.size()+1); //La palabra cumple con los requisitos
-				 }
-			 }
-		 }else {
-			 while(itr.hasNext()) {
-				 Query temp = itr.getNext();
-				 aux.insert(temp, aux.size()+1);
-			 }
-		 }
-		
-		return aux;
-	}
-	
-	/**
-	 * NOTA: investigar si las palabras con misma parte compartida
-	 * pero letras extras tienen mayor prioridad o menor que las que
-	 * son exactamente iguales.
-	 * 
-	 * 14/4 Las palabras que solo son el prefijo van antes que las palabras
-	 * que no son solo el prefijo
-	 * 
-	 * Metodo usado para comparar dos palabras lexicograficamente
-	 * @return 1 si a < b , 0 si a = b, -1 si a > b
-	 */
-	 private int compararLexicograficamente(String a, String b) {
-		int tamañoPalabra = 0;
-		
-		//Calculamos el tamaño de la palabra de menor tamaño
-		if( (a.length() - b.length()) > 0) {
-			tamañoPalabra = b.length();
-		}else {
-			tamañoPalabra = a.length();
-		}
-		
-		//Por cada caracter que puede potencialmente coincidir en
-		//las dos palabras
-		for(int i = 0; i < tamañoPalabra; i++) {
-			if(a.charAt(i) < b.charAt(i)) {
-				return 1; //caso a < b
-			}else if(a.charAt(i) > b.charAt(i)){
-				return -1; //caso a > b
-			}
-		}
-		
-		return 0; //caso a = b
-	}
 
 	/**
-	 * Incrementa la frecuencia de la consulta que ha
-	 * sido pasada como parametro.
-	 * Si el deposito no tiene una consulta con el mismo
-	 * texto del parametro entonces la crea y añade con frecuencia 1.
+	 * Incrementa la frecuencia de una consulta. 
+	 * 
+	 * Si no hay consultas almacenadas se agrega al deposito una nueva
+	 * consulta de texto q y frecuencia 1. 
+	 * 
+	 * Si hay consultas almacenadas se comprueba si alguna de ellas
+	 * tiene texto igual a "q" y, en caso de que se de el caso, 
+	 * simplemente se incrementa la frecuencia de la consulta. Si
+	 * no se encontro ninguna consulta almacenada con el texto "q"
+	 * se crea una nueva consulta de texto "q" y frecuencia 1 y se
+	 * agrega al deposito de consultas ademas de incrementar en 1
+	 * el numero de consultas almacenadas.
 	 * 
 	 * @param q - Consulta a incrementar la frecuencia
 	 */
 	public void incFreqQuery(String q) {
-		IteratorIF<Query> itr = obtenerDeposito().iterator();
-		boolean encontrado = false;
 		
-		//Si no hay consultas guardadas en el deposito
 		if(numQueries()==0) {
-			//Directamente añadimos la consulta de texto q y frecuencia 1
-			Query query = new Query(q);
-			query.setFreq(query.getFreq()+1);
-			obtenerDeposito().insert(query, 1);
-			
-			//Aumentamos en 1 el numero de consultas
-			incrementarNumeroConsultas();
-		}else { //Si hay consultas almacenadas
-			while(itr.hasNext()) { //Iterar las consultas
-				Query temp = itr.getNext();
-				
-				//Si una consulta se llama igual que q
-				if(temp.getText().equals(q)) {
-					//En vez de añadir una consulta a parte simplemente
-					//aumentamos la frecuencia de la consulta existente
-					temp.setFreq(temp.getFreq()+1);
-					encontrado = true;
-				}
-			}
-			
-			//Si no se ha encontado una consulta con el mismo texto q
-			if(!encontrado) {
-				//Se añade una consulta nueva
-				Query query = new Query(q);
-				query.setFreq(query.getFreq()+1);
-				obtenerDeposito().insert(query, obtenerDeposito().size()+1);
-				
-				//Aumentamos en 1 el numero de consultas
-				incrementarNumeroConsultas();
+			agregarNuevaConsulta(obtenerDeposito(), q);
+		}else {
+			Query temp = obtenerConsultaAlmacenada(obtenerDeposito(), q);
+			if(temp!=null) {
+				temp.setFreq(temp.getFreq()+1);
+			}else {
+				agregarNuevaConsulta(obtenerDeposito(), q);
 			}
 		}
+	}
+	
+	/**
+	 * Inserta una consulta de texto "q" y frecuencia 1 en la lista "l"
+	 * 
+	 * @param l Lista en la cual insertar la consulta
+	 * @param q Texto de la consulta a insertar
+	 */
+	private void agregarNuevaConsulta(ListIF<Query> l, String q) {
+		Query query = new Query(q);
+		query.setFreq(1);
+		l.insert(query, l.size()+1);
+		
+		//Aumentamos en 1 el numero de consultas
+		incrementarNumeroConsultas();
+	}
+	
+	/**
+	 * Devuelve una consulta cuyo texto sea "s"
+	 * 
+	 * @param l Lista con las consultas
+	 * @param s Texto con el que comparar las consultas
+	 * 
+	 * @return consulta cuyo texto sea "s"
+	 */
+	private Query obtenerConsultaAlmacenada(ListIF<Query> l, String s) {
+		
+		IteratorIF<Query> itr = obtenerDeposito().iterator();
+		while(itr.hasNext()) { //Iterar las consultas
+			Query temp = itr.getNext();
+			
+			if(temp.getText().equals(s)) {
+				return temp;
+			}
+		}
+		return null;
 	}
 
 }
